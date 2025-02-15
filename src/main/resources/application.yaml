@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: food-booking-backend
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/food-booking-db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password:
+
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0
+
+logging:
+  level:
+    root: info
+  file:
+    name: logs/server.log
