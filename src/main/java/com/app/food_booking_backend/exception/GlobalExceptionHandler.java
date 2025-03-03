@@ -25,4 +25,11 @@ public class GlobalExceptionHandler {
         errors.put("errorMessage", exception.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(InvalidEmailException.class)
+    public ResponseEntity<?> handleInvalidEmailException(InvalidEmailException exception) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("errorMessage", exception.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 }
