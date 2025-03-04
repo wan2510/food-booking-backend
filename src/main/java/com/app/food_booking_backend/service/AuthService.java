@@ -53,7 +53,7 @@ public class AuthService {
         User user = userRepository.findByEmail(loginRequest.getEmail());
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.setRole(user.getRole().getName());
-        String accessToken = JWTUtil.generateToken(user.getUuid());
+        String accessToken = JWTUtil.generateToken(user.getEmail());
         return LoginResponse.builder()
                 .user(userDTO)
                 .accessToken(accessToken)

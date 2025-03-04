@@ -1,5 +1,6 @@
 package com.app.food_booking_backend.config;
 
+import com.app.food_booking_backend.filter.AuthFilter;
 import com.app.food_booking_backend.service.UserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +14,18 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final UserDetailService userDetailService;
+    private final AuthFilter authFilter;
 
-    public SecurityConfig(UserDetailService userDetailService) {
+    public SecurityConfig(UserDetailService userDetailService, AuthFilter authFilter) {
         this.userDetailService = userDetailService;
+        this.authFilter = authFilter;
     }
 
     @Bean
@@ -39,6 +43,7 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 )
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
