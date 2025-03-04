@@ -22,7 +22,7 @@ public class Role {
             nullable = false,
             unique = true
     )
-    private String id;
+    private String uuid;
 
     @Column(
             name = "name",

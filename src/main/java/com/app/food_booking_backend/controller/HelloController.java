@@ -11,7 +11,7 @@ public class HelloController {
 
     @GetMapping("")
     public String sayHello() {
-        throw new UnauthorizedException("TEST");
+        return "Hello World!";
     }
 
 }

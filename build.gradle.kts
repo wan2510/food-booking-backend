@@ -30,6 +30,8 @@ dependencies {
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.flywaydb:flyway-mysql")
 	implementation("org.modelmapper:modelmapper:3.2.2")
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.4.3")
+	implementation("io.jsonwebtoken:jjwt:0.12.6")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
