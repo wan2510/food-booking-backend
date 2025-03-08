@@ -5,11 +5,20 @@ spring:
   application:
     name: food-booking-backend
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hucauvn37@gmail.com
+    password: ikslbmonnppsaqoe
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/food-booking-db
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password:
+    password: ""
 
   flyway:
     enabled: true
@@ -20,5 +29,6 @@ spring:
 logging:
   level:
     root: info
+    org.springframework.security: DEBUG
   file:
     name: logs/server.log
