@@ -1,11 +1,26 @@
 package com.app.food_booking_backend.model.entity;
 
-import com.app.food_booking_backend.model.entity.enums.UserStatusEnum;
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import com.app.food_booking_backend.model.entity.enums.UserStatusEnum;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "user")
 @Builder
@@ -67,6 +82,7 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name="role_id", nullable=false)
+    @JsonManagedReference
     private Role role;
 
     @CreationTimestamp

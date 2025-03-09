@@ -37,7 +37,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     authorize
                             .requestMatchers(
                                     "/api/auth/**",
-                                    "/api/email/**"
+                                    "/api/email/**",
+                                    "/api/food/**"
                             )
                             .permitAll()
                             .anyRequest().authenticated()
