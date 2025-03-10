@@ -1,15 +1,25 @@
 package com.app.food_booking_backend.model.dto;
 
-import com.app.food_booking_backend.model.entity.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.app.food_booking_backend.model.entity.enums.VoucherStatusEnum;
+import com.app.food_booking_backend.model.entity.enums.VoucherTypeEnum;
+import lombok.*;
 
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class VoucherDTO {
-    
+    private String code; 
+    private String name;
+    private int discount;
+    private int maxDiscountValue;
+    private int minOrderValue;
+    private LocalDateTime expiredAt;
+    private VoucherStatusEnum status;
+    private VoucherTypeEnum type;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt; 
 }

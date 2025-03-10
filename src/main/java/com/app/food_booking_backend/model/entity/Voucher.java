@@ -2,23 +2,54 @@ package com.app.food_booking_backend.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import com.app.food_booking_backend.model.entity.enums.VoucherStatusEnum;
+import com.app.food_booking_backend.model.entity.enums.VoucherTypeEnum;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "voucher")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Voucher {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private Double discount; // Giá trị giảm giá (có thể là % hoặc tiền mặt)
-    private Double maxDiscountValue; // Giảm tối đa nếu giảm theo %
-    private Double minOrderValue; // Giá trị đơn hàng tối thiểu để dùng voucher
-    private LocalDateTime expiredAt; // Ngày hết hạn
-    private Integer remainQuantity; // Số lượng còn lại
-    private LocalDateTime createdAt; // Ngày tạo voucher
+    @Id
+    @Column(name = "id", length = 20, nullable = false, unique = true)
+    private String id;    
+
+    @Column(name = "name", length = 255, nullable = false)
+    private String name;
+
+    @Column(name = "code", length = 50, nullable = false, unique = true)
+    private String code;
+
+    @Column(name = "discount", nullable = false)
+    private int discount;
+
+    @Column(name = "max_discount_value", nullable = false)
+    private int maxDiscountValue;
+
+    @Column(name = "min_order_value", nullable = false)
+    private int minOrderValue;
+
+    @Column(name = "expired_at", nullable = false)
+    private LocalDateTime expiredAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private VoucherStatusEnum status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 20, nullable = false)
+    private VoucherTypeEnum type;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @CreationTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 }
