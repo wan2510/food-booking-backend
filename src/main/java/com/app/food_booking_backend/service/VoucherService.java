@@ -9,6 +9,7 @@ import com.app.food_booking_backend.repository.*;
 import com.app.food_booking_backend.model.entity.*;
 import com.app.food_booking_backend.model.entity.enums.*;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +34,8 @@ public class VoucherService {
 //  update / add
     public Voucher addVoucher(Voucher voucher) {
         Long newId = voucherRepository.findMaxId()
-                                      .map(Long::parseLong)
-                                      .orElse(0L) + 1;
+                              .orElse(0L) + 1;
+
     
         voucher.setId(String.valueOf(newId));
         return voucherRepository.save(voucher);
@@ -59,8 +60,10 @@ public class VoucherService {
     @Scheduled(cron = "0 0 0 * * ?") 
     @Transactional
     public void updateExpiredVouchers() {
-        List<Voucher> expiredVouchers = voucherRepository.findExpiredVouchers(LocalDateTime.now());
-
+        List<Voucher> expiredVouchers = voucherRepository.findExpiredVouchers(
+            LocalDateTime.now()
+        );
+        
         for (Voucher voucher : expiredVouchers) {
             voucher.setStatus(VoucherStatusEnum.KHÔNG_KHẢ_DỤNG);
             voucherRepository.save(voucher);

@@ -10,7 +10,7 @@ import com.app.food_booking_backend.model.entity.enums.VoucherTypeEnum;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "voucher")
+@Entity
 @Getter
 @Setter
 @Builder
@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 public class Voucher {
 
     @Id
-    @Column(name = "id", length = 20, nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", length = 36, nullable = false, unique = true, updatable = false)
     private String id;    
 
     @Column(name = "name", length = 255, nullable = false)
