@@ -38,3 +38,4 @@ out/
 
 ### Logging ###
 /logs/*
+node_modules
