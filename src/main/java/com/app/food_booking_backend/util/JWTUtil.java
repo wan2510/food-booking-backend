@@ -1,10 +1,11 @@
 package com.app.food_booking_backend.util;
 
-import io.jsonwebtoken.Jwts;
-
-import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.Jwts;
 
 public class JWTUtil {
     private static final Key SECRET = Jwts.SIG.HS256.key().build();

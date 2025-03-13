@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,37 +29,24 @@ import lombok.Setter;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(
-            name = "uuid",
-            length = 36,
-            nullable = false,
-            unique = true
-    )
+    @Column(name = "uuid", length = 36, nullable = false, unique = true)
     private String uuid;
 
-    @Column(
-            name = "name",
-            length = 255,
-            nullable = false,
-            unique = true
-    )
+    @Column(name = "name", length = 255, nullable = false, unique = true)
     private String name;
 
-    @Column(
-            name = "description",
-            length = 255
-    )
+    @Column(name = "description", length = 255)
     private String description;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "category")
-    @JsonBackReference
+    @JsonManagedReference
     private List<Food> foods;
 }

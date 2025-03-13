@@ -38,11 +38,15 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                             .requestMatchers(
                                     "/api/auth/**",
                                     "/api/email/**",
-                                    "/api/food/**"
+                                    "/api/food/**",
+                                    "/api/cart/**",
+                                    "/api/category/**",
+                                    "/Image/**"
                             )
                             .permitAll()
                             .anyRequest().authenticated()
             )
+            .authenticationProvider(authenticationProvider())
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
 }

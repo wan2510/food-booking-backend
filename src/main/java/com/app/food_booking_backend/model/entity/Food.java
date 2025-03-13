@@ -10,52 +10,36 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "food")
-@Builder
+@Entity
+@Table(name = "food")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Food {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(
-            name = "uuid",
-            length = 36,
-            nullable = false,
-            unique = true
-    )
+    @Column(length = 36, nullable = false, unique = true)
     private String uuid;
 
-    @Column(
-            name = "name",
-            length = 255,
-            nullable = false
-    )
+    @Column(length = 255, nullable = false)
     private String name;
 
-    @Column(
-            name = "description",
-            columnDefinition = "TEXT"
-    )
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(
-            name = "status",
-            length = 50,
-            nullable = false
-    )
+    @Column(length = 50, nullable = false)
     private String status;
 
     @ManyToOne
@@ -63,18 +47,10 @@ public class Food {
     @JsonManagedReference
     private Category category;
 
-    @Column(
-            name = "image_url",
-            length = 255
-    )
+    @Column(length = 255)
     private String imageUrl;
 
-    @Column(
-            name = "price",
-            precision = 10,
-            scale = 2,
-            nullable = false
-    )
+    @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
 
     @CreationTimestamp

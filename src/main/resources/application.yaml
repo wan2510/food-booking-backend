@@ -26,6 +26,10 @@ spring:
     baseline-on-migrate: true
     baseline-version: 0
 
+  web:
+    resources:
+      static-locations: file:Image/ 
+
 logging:
   level:
     root: info
