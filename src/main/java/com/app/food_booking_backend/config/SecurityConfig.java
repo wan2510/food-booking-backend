@@ -9,13 +9,18 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.security.config.Customizer;
 
 import com.app.food_booking_backend.filter.AuthFilter;
 import com.app.food_booking_backend.service.UserDetailService;
+
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -30,27 +35,37 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests((authorize) ->
-                    authorize
-                            .requestMatchers(
-                                    "/api/auth/**",
-                                    "/api/email/**",
-                                    "/api/food/**",
-                                    "/api/cart/**",
-                                    "/api/category/**",
-                                    "/Image/**",
-                                    "/api/bookings"
-                            )
-                            .permitAll()
-                            .anyRequest().authenticated()
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
-}
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())  // Enable CORS with default configuration
+                .authorizeHttpRequests((authorize) ->
+                        authorize
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(
+                                        "/api/auth/**",
+                                        "/api/email/**",
+                                        "/api/food/**",
+                                        "/api/category/**",
+                                        "/Image/**",
+                                        "/api/bookings",
+                                        // Add static resource paths
+                                        "/",
+                                        "/static/**",
+                                        "/images/**",
+                                        "/*.ico",
+                                        "/*.json",
+                                        "/*.png"
+                                )
+                                .permitAll()
+                                .requestMatchers("/api/cart/**").authenticated()
+                                .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

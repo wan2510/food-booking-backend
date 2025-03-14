@@ -2,6 +2,8 @@ package com.app.food_booking_backend.model.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -30,6 +32,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonIgnoreProperties("items")
     private Cart cart;
 
     @ManyToOne
@@ -40,10 +43,12 @@ public class CartItem {
     private int quantity;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     public CartItem(Cart cart, Food food, int quantity) {
         this.uuid = java.util.UUID.randomUUID().toString();
