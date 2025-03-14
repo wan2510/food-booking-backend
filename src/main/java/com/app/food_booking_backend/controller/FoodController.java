@@ -56,49 +56,27 @@ public class FoodController {
     ) {
         return foodService.searchFoods(query, categoryUuid, priceFilter);
     }
-
-    // ===========================
-    //  API UPLOAD ẢNH CHO FOOD
-    // ===========================
     @PostMapping("/{uuid}/upload-image")
     public ResponseEntity<?> uploadImage(
             @PathVariable String uuid,
             @RequestParam("file") MultipartFile file
     ) {
         try {
-            // 1) Kiểm tra Food tồn tại
             FoodDTO foodDTO = foodService.getFoodByUuid(uuid);
             if (foodDTO == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                      .body(Map.of("error", "Food không tồn tại"));
             }
-
-            // 2) Kiểm tra tên file hợp lệ
             String originalFilename = file.getOriginalFilename();
             if (originalFilename == null || originalFilename.isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Tên file không hợp lệ"));
             }
-
-            // 3) Lưu file vào thư mục src/Image
-            //    - Tạo thư mục nếu chưa có
             Path imageDir = Paths.get("src", "Image").toAbsolutePath().normalize();
             Files.createDirectories(imageDir);
-
-            //    - Tạo đường dẫn file đích
-            //      => Có thể dùng UUID.randomUUID() để tránh trùng tên
             Path targetPath = imageDir.resolve(originalFilename);
-
-            //    - Copy file vào folder
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-            // 4) Tạo URL để lưu vào DB (tùy cấu hình hiển thị ảnh)
-            //    Ví dụ: http://localhost:8080/Image/burgerbo.jpg
-            //    => Muốn ảnh truy cập được, bạn phải cấu hình static resource / Security
             String imageUrl = "http://localhost:8080/Image/" + originalFilename;
-
-            // 5) Cập nhật imageUrl trong DB
             foodDTO.setImageUrl(imageUrl);
-            // Giả sử bạn có hàm updateFood trong service
             foodService.updateFood(foodDTO);
 
             return ResponseEntity.ok(Map.of(

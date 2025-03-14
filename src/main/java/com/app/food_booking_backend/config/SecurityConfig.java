@@ -41,7 +41,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                                     "/api/food/**",
                                     "/api/cart/**",
                                     "/api/category/**",
-                                    "/Image/**"
+                                    "/Image/**",
+                                    "/api/bookings"
                             )
                             .permitAll()
                             .anyRequest().authenticated()

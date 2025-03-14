@@ -129,4 +129,22 @@ public class AuthService {
         int otp = 100000 + random.nextInt(999999);
         return String.valueOf(otp);
     }
+    public boolean resetPassword(String email, String otp, String newPassword) {
+        if (!verifyOTP(email, otp)) {
+            return false;
+        }
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new InvalidEmailException("Email không tồn tại trong hệ thống");
+        }
+
+        user.setHashPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        otpStorage.remove(email);
+        otpExpiry.remove(email);
+
+        return true;
+    }
 }
