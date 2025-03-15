@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS voucher (
 
 INSERT INTO voucher (id, name, code, discount, max_discount_value, min_order_value, expired_at, status, type)
 VALUES
-    ('1', 'Khách hàng mới', 'NEW2025', 10, 50000, 200000, '2025-12-31 23:59:59', 'KHẢ_DỤNG', 'FOR_NEW_USERS'),
-    ('2', 'Khách hàng VIP', 'VIP999', 20, 100000, 300000, '2025-12-31 23:59:59', 'KHẢ_DỤNG', 'FOR_VIP_USERS');
+    ('3', 'Khách hàng mới', 'NEW2025', 10, 50000, 200000, '2025-12-31 23:59:59', 'KHẢ_DỤNG', 'FOR_NEW_USERS'),
+    ('4', 'Khách hàng VIP', 'VIP999', 20, 100000, 300000, '2025-12-31 23:59:59', 'KHẢ_DỤNG', 'FOR_VIP_USERS');
