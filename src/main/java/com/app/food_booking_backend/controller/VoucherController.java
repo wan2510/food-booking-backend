@@ -18,17 +18,17 @@ public class VoucherController {
         this.voucherService = voucherService;
     }
 
-    @GetMapping
+    @GetMapping("/getVouchers")
     public List<Voucher> getAllVouchers() {
         return voucherService.getVouchers();
     }
 
-    @PostMapping
+    @PostMapping("/addVoucher")
     public ResponseEntity<Voucher> addVoucher(@RequestBody Voucher voucher) {
         return ResponseEntity.ok(voucherService.addVoucher(voucher));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/updateVoucher{id}")
     public ResponseEntity<?> updateVoucher(@PathVariable String id, @RequestBody Voucher newVoucher) {
         try {
             return ResponseEntity.ok(voucherService.updateVoucher(id, newVoucher));
