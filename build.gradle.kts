@@ -34,6 +34,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.12.6")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.cloudinary:cloudinary-core:1.35.0")
+    implementation("com.cloudinary:cloudinary-http44:1.35.0")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.mysql:mysql-connector-j")
     annotationProcessor("org.projectlombok:lombok")
@@ -44,4 +46,8 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile> {
+	options.compilerArgs.add("-parameters")
 }

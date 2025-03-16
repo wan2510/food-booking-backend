@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.food_booking_backend.model.dto.ResetPasswordRequestDTO;
 import com.app.food_booking_backend.model.dto.UserDTO;
 import com.app.food_booking_backend.model.request.LoginRequest;
 import com.app.food_booking_backend.model.request.RegisterRequest;
@@ -47,27 +46,8 @@ public class AuthController {
     }
 
     @GetMapping("/send-otp/{email}")
-    public ResponseEntity<String> sendOTP(@PathVariable String email) {
+    public boolean sendOTP(@PathVariable("email") String email) {
         authService.sendOTP(email);
-        return ResponseEntity.ok("OTP đã được gửi tới " + email);
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequestDTO resetPasswordRequest) {
-        try {
-            boolean isReset = authService.resetPassword(
-                    resetPasswordRequest.getEmail(),
-                    resetPasswordRequest.getOtp(),
-                    resetPasswordRequest.getNewPassword()
-            );
-
-            if (isReset) {
-                return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công!");
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("OTP không hợp lệ hoặc đã hết hạn!");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra khi đặt lại mật khẩu.");
-        }
+        return true;
     }
 }

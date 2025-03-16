@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Upload Ảnh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Upload Ảnh lên Cloudinary</h1>
+    
+    <div class="form-group">
+        <label for="image">Chọn ảnh:</label>
+        <input type="file" id="image" accept="image/*">
+    </div>
+    
+    <button onclick="uploadImage()">Upload</button>
+    
+    <div id="result">
+        <h3>Kết quả:</h3>
+        <pre id="json-result"></pre>
+        <div id="image-preview"></div>
+    </div>
+
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('image');
+            const resultDiv = document.getElementById('result');
+            const jsonResult = document.getElementById('json-result');
+            const imagePreview = document.getElementById('image-preview');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Vui lòng chọn một file ảnh');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://localhost:8080/api/test/upload-only', true);
+            
+            xhr.onload = function() {
+                resultDiv.style.display = 'block';
+                
+                if (xhr.status === 200) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        jsonResult.textContent = JSON.stringify(data, null, 2);
+                        
+                        if (data.success && data.imageUrl) {
+                            imagePreview.innerHTML = `<p>Ảnh đã upload:</p><img src="${data.imageUrl}" alt="Uploaded image">`;
+                        } else {
+                            imagePreview.innerHTML = '';
+                        }
+                    } catch (e) {
+                        jsonResult.textContent = `Lỗi khi parse JSON: ${e.message}`;
+                        imagePreview.innerHTML = '';
+                    }
+                } else {
+                    jsonResult.textContent = `Lỗi HTTP: ${xhr.status}`;
+                    imagePreview.innerHTML = '';
+                }
+            };
+            
+            xhr.onerror = function() {
+                resultDiv.style.display = 'block';
+                jsonResult.textContent = 'Lỗi kết nối đến server';
+                imagePreview.innerHTML = '';
+            };
+            
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html> 

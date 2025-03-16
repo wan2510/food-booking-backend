@@ -30,6 +30,17 @@ spring:
     resources:
       static-locations: file:Image/ 
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# Cấu hình Cloudinary
+cloudinary:
+  cloud-name: dlutz1pvz
+  api-key: 692696427816334
+  api-secret: g6nQ6n95Qg-VgMV0mK2Y8bthJzc
+
 logging:
   level:
     root: info

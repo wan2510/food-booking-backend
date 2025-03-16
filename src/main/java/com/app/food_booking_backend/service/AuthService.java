@@ -64,9 +64,12 @@ public class AuthService {
             throw new UnauthorizedException("Invalid email or password");
         }
         User user = userRepository.findByEmail(loginRequest.getEmail());
+        if (user.getStatus() != UserStatusEnum.ACTIVE) {
+            throw new UnauthorizedException("Tài khoản chưa được kích hoạt hoặc bị vô hiệu hóa");
+        }
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.setRole(user.getRole().getName());
-        String accessToken = JWTUtil.generateToken(user.getUuid());
+        String accessToken = JWTUtil.generateToken(user.getEmail());
         return LoginResponse.builder()
                 .user(userDTO)
                 .accessToken(accessToken)
@@ -128,23 +131,5 @@ public class AuthService {
         Random random = new Random();
         int otp = 100000 + random.nextInt(999999);
         return String.valueOf(otp);
-    }
-    public boolean resetPassword(String email, String otp, String newPassword) {
-        if (!verifyOTP(email, otp)) {
-            return false;
-        }
-
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new InvalidEmailException("Email không tồn tại trong hệ thống");
-        }
-
-        user.setHashPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        otpStorage.remove(email);
-        otpExpiry.remove(email);
-
-        return true;
     }
 }

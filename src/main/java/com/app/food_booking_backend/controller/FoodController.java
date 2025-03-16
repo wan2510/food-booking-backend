@@ -1,25 +1,26 @@
 package com.app.food_booking_backend.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.food_booking_backend.model.dto.FoodDTO;
+import com.app.food_booking_backend.service.CloudinaryService;
 import com.app.food_booking_backend.service.FoodService;
 
 @RestController
@@ -28,9 +29,11 @@ import com.app.food_booking_backend.service.FoodService;
 public class FoodController {
 
     private final FoodService foodService;
+    private final CloudinaryService cloudinaryService;
 
-    public FoodController(FoodService foodService) {
+    public FoodController(FoodService foodService, CloudinaryService cloudinaryService) {
         this.foodService = foodService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @GetMapping
@@ -58,38 +61,65 @@ public class FoodController {
     ) {
         return foodService.searchFoods(query, categoryUuid, priceFilter);
     }
-    @PostMapping("/{uuid}/upload-image")
-    public ResponseEntity<?> uploadImage(
+
+    @PostMapping(value = "/{uuid}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFoodImage(
             @PathVariable String uuid,
-            @RequestParam("file") MultipartFile file
+            @RequestPart("image") MultipartFile image
     ) {
         try {
             FoodDTO foodDTO = foodService.getFoodByUuid(uuid);
             if (foodDTO == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                     .body(Map.of("error", "Food không tồn tại"));
+                        .body(Map.of("error", "Food không tồn tại"));
             }
-            String originalFilename = file.getOriginalFilename();
-            if (originalFilename == null || originalFilename.isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Tên file không hợp lệ"));
+
+            // Xóa ảnh cũ nếu có
+            if (foodDTO.getImageUrl() != null && !foodDTO.getImageUrl().isEmpty()) {
+                cloudinaryService.deleteImage(foodDTO.getImageUrl());
             }
-            Path imageDir = Paths.get("src", "Image").toAbsolutePath().normalize();
-            Files.createDirectories(imageDir);
-            Path targetPath = imageDir.resolve(originalFilename);
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-            String imageUrl = "http://localhost:8080/Image/" + originalFilename;
+
+            // Upload ảnh mới
+            String imageUrl = cloudinaryService.uploadImage(image);
+            
+            // Cập nhật URL ảnh
             foodDTO.setImageUrl(imageUrl);
             foodService.updateFood(foodDTO);
 
             return ResponseEntity.ok(Map.of(
-                    "message", "Upload thành công",
-                    "imageUrl", imageUrl
+                "message", "Upload ảnh thành công",
+                "imageUrl", imageUrl
             ));
-
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(Map.of("error", "Lỗi upload file: " + e.getMessage()));
+                    .body(Map.of("error", "Lỗi khi upload ảnh: " + e.getMessage()));
         }
     }
 
+    @PutMapping("/{uuid}/update-image")
+    public ResponseEntity<?> updateFoodImage(
+            @PathVariable String uuid,
+            @RequestBody Map<String, String> request
+    ) {
+        String imageUrl = request.get("imageUrl");
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Image URL không hợp lệ"));
+        }
+
+        FoodDTO foodDTO = foodService.getFoodByUuid(uuid);
+        if (foodDTO == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Food không tồn tại"));
+        }
+
+        // Xóa ảnh cũ nếu có
+        if (foodDTO.getImageUrl() != null && !foodDTO.getImageUrl().isEmpty()) {
+            cloudinaryService.deleteImage(foodDTO.getImageUrl());
+        }
+
+        foodDTO.setImageUrl(imageUrl);
+        foodService.updateFood(foodDTO);
+
+        return ResponseEntity.ok(Map.of("message", "Cập nhật ảnh thành công", "imageUrl", imageUrl));
+    }
 }

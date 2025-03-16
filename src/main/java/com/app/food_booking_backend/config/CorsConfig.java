@@ -1,12 +1,12 @@
 package com.app.food_booking_backend.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
-import java.util.Arrays;
 
 @Configuration
 public class CorsConfig {
@@ -16,25 +16,25 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Allow frontend origin
-        config.addAllowedOrigin("http://localhost:5173");
+        // Chỉ định origin của frontend
+        config.setAllowedOrigins(List.of("http://localhost:5173")); 
         
-        // Allow all HTTP methods
-        config.addAllowedMethod("*");
+        // Cho phép các phương thức HTTP
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
-        // Allow all headers
-        config.addAllowedHeader("*");
-        
-        // Expose headers
-        config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        
-        // Allow credentials (important for authentication)
+        // Cho phép tất cả headers
+        config.setAllowedHeaders(List.of("*"));
+
+        // Expose các headers cần thiết
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+
+        // Cho phép gửi cookie/token
         config.setAllowCredentials(true);
         
-        // Set max age for preflight requests
+        // Thời gian cache preflight request
         config.setMaxAge(3600L);
         
-        // Apply this configuration to all paths
+        // Áp dụng cho toàn bộ API
         source.registerCorsConfiguration("/**", config);
         
         return new CorsFilter(source);

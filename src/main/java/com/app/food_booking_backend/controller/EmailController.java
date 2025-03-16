@@ -1,12 +1,12 @@
 package com.app.food_booking_backend.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.food_booking_backend.service.AuthService;
+
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
@@ -18,8 +18,8 @@ public class EmailController {
     }
 
     @GetMapping("/send-otp/{email}")
-    public ResponseEntity<Boolean> sendOTP(@PathVariable String email) {
+    public boolean sendOTP(@PathVariable(name = "email") String email) {
         authService.sendOTP(email);
-        return ResponseEntity.ok(true);
+        return true;
     }
 }

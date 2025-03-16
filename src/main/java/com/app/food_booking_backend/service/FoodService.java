@@ -2,9 +2,9 @@ package com.app.food_booking_backend.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.app.food_booking_backend.model.dto.FoodDTO;
@@ -15,9 +15,11 @@ import com.app.food_booking_backend.repository.FoodRepository;
 public class FoodService {
 
     private final FoodRepository foodRepository;
+    private final ModelMapper modelMapper;
 
-    public FoodService(FoodRepository foodRepository) {
+    public FoodService(FoodRepository foodRepository, ModelMapper modelMapper) {
         this.foodRepository = foodRepository;
+        this.modelMapper = modelMapper;
     }
 
     public List<FoodDTO> getAllFoods() {
@@ -27,45 +29,29 @@ public class FoodService {
                              .collect(Collectors.toList());
     }
 
-    // Lấy FoodDTO theo UUID
     public FoodDTO getFoodByUuid(String uuid) {
-        Optional<Food> foodOpt = foodRepository.findById(uuid);
-        return foodOpt.map(this::convertToDTO).orElse(null);
+        return foodRepository.findById(uuid)
+                             .map(this::convertToDTO)
+                             .orElse(null);
     }
-    public FoodDTO updateFood(FoodDTO foodDTO) {
-        // 1) Tìm entity trong DB theo uuid
-        Optional<Food> foodOpt = foodRepository.findById(foodDTO.getUuid());
-        if (foodOpt.isEmpty()) {
-            throw new RuntimeException("Food không tồn tại với uuid: " + foodDTO.getUuid());
-        }
-        Food food = foodOpt.get();
 
-        // 2) Cập nhật các trường
+    public FoodDTO updateFood(FoodDTO foodDTO) {
+        Food food = foodRepository.findById(foodDTO.getUuid())
+                                  .orElseThrow(() -> new RuntimeException("Food không tồn tại với uuid: " + foodDTO.getUuid()));
+
         food.setName(foodDTO.getName());
         food.setDescription(foodDTO.getDescription());
         food.setStatus(foodDTO.getStatus());
         food.setImageUrl(foodDTO.getImageUrl());
         food.setPrice(foodDTO.getPrice());
-        // Nếu cần cập nhật Category, bạn phải có CategoryRepository
-        // rồi setCategory(...) theo UUID hoặc ID của Category.
 
-        // 3) Lưu lại DB
-        Food savedFood = foodRepository.save(food);
-
-        // 4) Trả về DTO sau khi update
-        return convertToDTO(savedFood);
+        return convertToDTO(foodRepository.save(food));
     }
 
     private FoodDTO convertToDTO(Food food) {
-        return new FoodDTO(
-                food.getUuid(),
-                food.getName(),
-                food.getDescription(),
-                food.getStatus(),
-                food.getImageUrl(),
-                food.getPrice(),
-                food.getCategory().getName() // Hiển thị tên Category
-        );
+        FoodDTO foodDTO = modelMapper.map(food, FoodDTO.class);
+        foodDTO.setCategoryName(food.getCategory().getName());
+        return foodDTO;
     }
 
     public List<FoodDTO> searchFoods(String query, String categoryUuid, String priceFilter) {
@@ -86,18 +72,15 @@ public class FoodService {
 
         if (priceFilter != null && !"all".equals(priceFilter)) {
             if ("low".equals(priceFilter)) {
-                // Giá dưới 50K
                 foods = foods.stream()
                              .filter(food -> food.getPrice().compareTo(new BigDecimal("50000")) < 0)
                              .collect(Collectors.toList());
             } else if ("medium".equals(priceFilter)) {
-                // Giá từ 50K đến 100K
                 foods = foods.stream()
                              .filter(food -> food.getPrice().compareTo(new BigDecimal("50000")) >= 0
                                     && food.getPrice().compareTo(new BigDecimal("100000")) <= 0)
                              .collect(Collectors.toList());
             } else if ("high".equals(priceFilter)) {
-                // Giá trên 100K
                 foods = foods.stream()
                              .filter(food -> food.getPrice().compareTo(new BigDecimal("100000")) > 0)
                              .collect(Collectors.toList());
