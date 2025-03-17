@@ -53,4 +53,7 @@ public class Order {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderItem> items;
 }
