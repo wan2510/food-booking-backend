@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.app.food_booking_backend.model.entity.enums.OrderStatus;
 
 import jakarta.persistence.CascadeType;
@@ -30,10 +33,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+
     @Id
     @Column(length = 36, nullable = false)
     private String uuid;
 
+    // Khóa ngoại tới bảng user (cột user_id)
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -42,18 +47,17 @@ public class Order {
     private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
-    private List<OrderItem> items;
 }

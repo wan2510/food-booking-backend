@@ -49,10 +49,6 @@ public class UserService {
             user.setPhone(updateProfileRequest.getPhone());
         }
         
-        if (updateProfileRequest.getAddress() != null) {
-            user.setAddress(updateProfileRequest.getAddress());
-        }
-        
         User updatedUser = userRepository.save(user);
         
         UserDTO userDTO = modelMapper.map(updatedUser, UserDTO.class);

@@ -51,9 +51,6 @@ public class User {
     @Column(length = 15, nullable = false, unique = true)
     private String phone;
 
-    @Column(length = 255)
-    private String address;
-
     @Enumerated(EnumType.STRING)
     private UserStatusEnum status;
 
