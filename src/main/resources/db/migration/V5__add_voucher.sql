@@ -1,5 +1,5 @@
 CREATE TABLE voucher (
-    uuidid VARCHAR(36) PRIMARY KEY,
+    uuid VARCHAR(36) PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,       -- Mã voucher
     name VARCHAR(255) NOT NULL,             -- Tên voucher
     discount_percentage INT NOT NULL,       -- Giảm giá (%)
