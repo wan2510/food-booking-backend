@@ -29,8 +29,8 @@ public class Voucher {
     @Column(name = "code", length = 50, nullable = false, unique = true)
     private String code;
 
-    @Column(name = "discount", nullable = false)
-    private int discount;
+    @Column(name = "discount_percentage", nullable = false)
+    private int discount_percentage;
 
     @Column(name = "max_discount_value", nullable = false)
     private int maxDiscountValue;

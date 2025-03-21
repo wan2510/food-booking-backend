@@ -13,8 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, String> {
-    
-    List<Voucher> findByNameContainingIgnoreCase(String name);
 
     @Query("SELECT MAX(CAST(v.id AS long)) FROM Voucher v")
     Optional<Long> findMaxId();
@@ -23,5 +21,4 @@ public interface VoucherRepository extends JpaRepository<Voucher, String> {
 
     @Query("SELECT v FROM Voucher v WHERE v.expiredAt <= :now")
     List<Voucher> findExpiredVouchers(@Param("now") LocalDateTime now);
-
 }

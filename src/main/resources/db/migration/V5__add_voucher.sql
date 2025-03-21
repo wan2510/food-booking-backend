@@ -8,5 +8,6 @@ CREATE TABLE voucher (
     created_at datetime NOT NULL,               -- Ngày tạo
     expired_date datetime NOT NULL,              -- Ngày hết hạn
     type VARCHAR(50) NOT NULL,              -- Loại voucher
-    status ENUM('Khả dụng', 'Không khả dụng') NOT NULL -- Trạng thái
+    status ENUM('Khả dụng', 'Không khả dụng') NOT NULL, -- Trạng thái
+    updated_at datetime NOT NULL
 );

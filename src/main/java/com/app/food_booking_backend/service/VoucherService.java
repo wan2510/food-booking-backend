@@ -22,9 +22,9 @@ public class VoucherService {
     public VoucherService(VoucherRepository voucherRepository) {
         this.voucherRepository = voucherRepository;
     }
-//  get / search voucher(s)
+//  get 
     public List<Voucher> getVouchers() {
-        return voucherRepository.findByNameContainingIgnoreCase("");
+        return voucherRepository.findAll();
     }
 
     private Optional<Voucher> getVoucherById(String id) {
@@ -46,7 +46,7 @@ public class VoucherService {
         if (existingVoucher.isPresent()) {
             Voucher voucher = existingVoucher.get();
             voucher.setName(newVoucher.getName());
-            voucher.setDiscount(newVoucher.getDiscount());
+            voucher.setDiscount_percentage(newVoucher.getDiscount_percentage());
             voucher.setMaxDiscountValue(newVoucher.getMaxDiscountValue());
             voucher.setMinOrderValue(newVoucher.getMinOrderValue());
             voucher.setType(newVoucher.getType());

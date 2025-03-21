@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/voucher")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class VoucherController {
     private final VoucherService voucherService;
 
@@ -29,7 +28,7 @@ public class VoucherController {
         return ResponseEntity.ok(voucherService.addVoucher(voucher));
     }
 
-    @PutMapping("/updateVoucher/{id}")
+    @PutMapping("/updateVoucher/{uuidid}")
     public ResponseEntity<?> updateVoucher(@PathVariable String id, @RequestBody Voucher newVoucher) {
         try {
             return ResponseEntity.ok(voucherService.updateVoucher(id, newVoucher));
