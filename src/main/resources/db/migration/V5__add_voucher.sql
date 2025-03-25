@@ -1,13 +1,16 @@
 CREATE TABLE voucher (
-    uuid VARCHAR(36) PRIMARY KEY,
-    code VARCHAR(50) NOT NULL UNIQUE,       -- Mã voucher
-    name VARCHAR(255) NOT NULL,             -- Tên voucher
-    discount_percentage INT NOT NULL,       -- Giảm giá (%)
-    max_discount_amount DECIMAL(10,2),      -- Giảm tối đa (VND)
-    min_order_value DECIMAL(10,2),          -- Mức tối thiểu (VND)
-    created_at datetime NOT NULL,               -- Ngày tạo
-    expired_date datetime NOT NULL,              -- Ngày hết hạn
-    type VARCHAR(50) NOT NULL,              -- Loại voucher
-    status ENUM('Khả dụng', 'Không khả dụng') NOT NULL, -- Trạng thái
-    updated_at datetime NOT NULL
+    id VARCHAR(36) PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    discount_percentage INT NOT NULL,
+    max_discount_value INT NOT NULL,
+    min_order_value INT NOT NULL,
+    expired_at DATETIME NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
 );
+
+INSERT INTO voucher (id, code, name, discount_percentage, max_discount_value, min_order_value, expired_at, status, type, created_at, updated_at)
+VALUES ('123e4567-e89b-12d3-a456-426614174000', 'VOUCHER1', 'Giảm giá 10%', 10, 50000, 100000, '2025-12-31 23:59:59', 'ACTIVE', 'FOR_ALL_USERS', '2023-10-01 00:00:00', '2023-10-01 00:00:00');

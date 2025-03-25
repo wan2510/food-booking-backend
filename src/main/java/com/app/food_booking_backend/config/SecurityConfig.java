@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.app.food_booking_backend.filter.AuthFilter;
 import com.app.food_booking_backend.service.UserDetailService;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -32,7 +31,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.disable()) // Vô hiệu hóa CORS trong Spring Security
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize)
                         -> authorize
@@ -41,12 +40,13 @@ public class SecurityConfig {
                                 "/api/email/**",
                                 "/api/food/**",
                                 "/api/cart/**",
-                                "/api/category/**",
+                                "/api/category/**",                     
                                 "/Image/**",
                                 "/api/bookings",
                                 "/api/order",
                                 "/api/tables/**",
-                                "/api/reports/revenue"
+                                "/api/reports/revenue",
+                                "/api/voucher/**"
                         )
                         .permitAll()
                         .anyRequest().authenticated()

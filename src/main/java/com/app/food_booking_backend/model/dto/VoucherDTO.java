@@ -15,7 +15,7 @@ public class VoucherDTO {
     private String id;
     private String code; 
     private String name;
-    private int discount;
+    private int discountPercentage;
     private int maxDiscountValue;
     private int minOrderValue;
     private LocalDateTime expiredAt;
