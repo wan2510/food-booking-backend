@@ -29,7 +29,6 @@ public class VoucherService {
 
     // Chuyển từ VoucherDTO sang Voucher (entity)
     private Voucher toVoucher(VoucherDTO voucherDTO) {
-        // Kiểm tra null cho voucherDTO
         if (voucherDTO == null) {
             throw new IllegalArgumentException("Không nhận được thông tin voucher!");
         }
@@ -39,17 +38,16 @@ public class VoucherService {
 
     // Chuyển từ Voucher (entity) sang VoucherDTO
     private VoucherDTO toVoucherDTO(Voucher voucher) {
-        // Kiểm tra null
         if (voucher == null) {
             throw new IllegalArgumentException("Thông tin Voucher không nhận diện được!");
         }
         return modelMapper.map(voucher, VoucherDTO.class);
     }
 
-    // Lấy danh sách tất cả voucher từ DB và chuyển thành DTO
+    // Lấy danh sách tất cả voucher chưa bị xóa từ DB và chuyển thành DTO
     public List<VoucherDTO> getVouchers() {
         try {
-            return voucherRepository.findAll().stream()
+            return voucherRepository.findActiveVouchers().stream()
                 .map(this::toVoucherDTO)
                 .collect(Collectors.toList());
         } catch (Exception e) {
@@ -61,6 +59,7 @@ public class VoucherService {
     public Voucher addVoucher(VoucherDTO voucherDTO) {
         try {
             Voucher voucher = toVoucher(voucherDTO);
+            // Không ghi đè deletedAt, sử dụng giá trị từ client
             return voucherRepository.save(voucher);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm voucher: " + e.getMessage());

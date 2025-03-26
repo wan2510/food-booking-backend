@@ -38,4 +38,5 @@ public class VoucherController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
 }

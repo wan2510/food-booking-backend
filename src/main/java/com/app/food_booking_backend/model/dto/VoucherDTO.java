@@ -23,4 +23,5 @@ public class VoucherDTO {
     private VoucherTypeEnum type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt; 
+    private LocalDateTime deletedAt; 
 }
