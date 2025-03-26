@@ -20,6 +20,7 @@ import com.app.food_booking_backend.service.UserService;
 
 @RestController
 @RequestMapping("/api/user")
+
 public class UserController {
 
     private final UserService userService;
@@ -28,26 +29,25 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/getListAccount")
-    public List<UserDTO> getUserDTOs() {
+    @GetMapping("/getListUser")
+    public List<UserDTO> getUsers() {
         return userService.getUsers();
     }
 
-    @PostMapping("/createNewStaffAccount")
-    public ResponseEntity<User> addVoucher(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.createAccountStaff(userDTO));
+    @PostMapping("/addNewUser")
+    public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.createAccount(userDTO));
     }
 
-    @PutMapping("/updateAccount")
-    public ResponseEntity<?> updateVoucher(@RequestBody UserDTO userDTO) {
+    @PutMapping("/updateUser")
+    public ResponseEntity<?> updateUser(@RequestBody UserDTO userDTO) {
         try {
-            return ResponseEntity.ok(userService.updateAccountUser(userDTO));
+            return ResponseEntity.ok(userService.updateAccount(userDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-
-    @GetMapping("/profile")
+@GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -62,4 +62,4 @@ public class UserController {
         UserDTO updatedUser = userService.updateUserProfile(email, updateProfileRequest);
         return ResponseEntity.ok(updatedUser);
     }
-} 
+}
