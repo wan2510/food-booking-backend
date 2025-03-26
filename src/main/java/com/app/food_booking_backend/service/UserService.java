@@ -1,18 +1,15 @@
 package com.app.food_booking_backend.service;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
 
 import com.app.food_booking_backend.exception.ResourceNotFoundException;
 import com.app.food_booking_backend.model.dto.UserDTO;
-import com.app.food_booking_backend.model.dto.VoucherDTO;
 import com.app.food_booking_backend.model.entity.User;
-import com.app.food_booking_backend.model.entity.Voucher;
 import com.app.food_booking_backend.model.request.UpdateProfileRequest;
 import com.app.food_booking_backend.repository.UserRepository;
 

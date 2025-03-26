@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.food_booking_backend.service.AuthService;
 
+@Deprecated
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
