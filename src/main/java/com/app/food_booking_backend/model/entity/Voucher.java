@@ -3,8 +3,6 @@ package com.app.food_booking_backend.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import com.app.food_booking_backend.model.entity.enums.VoucherStatusEnum;
 import com.app.food_booking_backend.model.entity.enums.VoucherTypeEnum;
 

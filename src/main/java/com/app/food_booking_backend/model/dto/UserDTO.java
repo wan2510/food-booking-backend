@@ -15,11 +15,12 @@ import lombok.Setter;
 public class UserDTO {
     private String uuid;
     private String email;
+    private String hashPassword;
     private String fullName;
     private String phone;
+    private String status;
     private String avatarUrl;
     private String role;
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
-    private LocalDateTime deletedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
