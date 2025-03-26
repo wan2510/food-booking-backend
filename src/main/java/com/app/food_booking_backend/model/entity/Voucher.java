@@ -23,14 +23,14 @@ public class Voucher {
     @Column(name = "id", length = 36, nullable = false, unique = true, updatable = false)
     private String id;    
 
-    @Column(name = "name", length = 255, nullable = false)
+    @Column(name = "name", length = 255, nullable = false, updatable = false)
     private String name;
 
-    @Column(name = "code", length = 50, nullable = false, unique = true)
+    @Column(name = "code", length = 50, nullable = false, unique = true, updatable = false)
     private String code;
 
-    @Column(name = "discount", nullable = false)
-    private int discount;
+    @Column(name = "discount_percentage", nullable = false)
+    private int discountPercentage;
 
     @Column(name = "max_discount_value", nullable = false)
     private int maxDiscountValue;
@@ -38,7 +38,7 @@ public class Voucher {
     @Column(name = "min_order_value", nullable = false)
     private int minOrderValue;
 
-    @Column(name = "expired_at", nullable = false)
+    @Column(name = "expired_at", nullable = false, updatable = false)
     private LocalDateTime expiredAt;
 
     @Enumerated(EnumType.STRING)
@@ -49,11 +49,12 @@ public class Voucher {
     @Column(name = "type", length = 20, nullable = false)
     private VoucherTypeEnum type;
     
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @CreationTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at", nullable = true)
+    private LocalDateTime deletedAt;
 }

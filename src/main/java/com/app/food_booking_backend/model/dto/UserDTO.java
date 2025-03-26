@@ -1,5 +1,7 @@
 package com.app.food_booking_backend.model.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +18,7 @@ public class UserDTO {
     private String phone;
     private String avatarUrl;
     private String role;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
+    private LocalDateTime deletedAt;
 }

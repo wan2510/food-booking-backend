@@ -1,15 +1,20 @@
 package com.app.food_booking_backend.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.food_booking_backend.model.dto.UserDTO;
+import com.app.food_booking_backend.model.entity.User;
 import com.app.food_booking_backend.model.request.UpdateProfileRequest;
 import com.app.food_booking_backend.service.UserService;
 
@@ -21,6 +26,25 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/getListAccount")
+    public List<UserDTO> getUserDTOs() {
+        return userService.getUsers();
+    }
+
+    @PostMapping("/createNewStaffAccount")
+    public ResponseEntity<User> addVoucher(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.createAccountStaff(userDTO));
+    }
+
+    @PutMapping("/updateAccount")
+    public ResponseEntity<?> updateVoucher(@RequestBody UserDTO userDTO) {
+        try {
+            return ResponseEntity.ok(userService.updateAccountUser(userDTO));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/profile")
