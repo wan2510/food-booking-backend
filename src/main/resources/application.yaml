@@ -15,7 +15,7 @@ spring:
       mail.smtp.starttls.enable: true
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/food-booking-db
+    url: jdbc:mysql://localhost:3306/food-booking-db
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ""
@@ -28,7 +28,7 @@ spring:
 
   web:
     resources:
-      static-locations: file:Image/ 
+      static-locations: file:Image/
 
 logging:
   level:

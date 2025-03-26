@@ -29,7 +29,7 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<?> addToCart(@RequestBody CartRequestDTO request) {
         try {
-            cartService.addToCart(request.getUserUuid(), request.getFoodUuid(), request.getQuantity());
+            cartService.addToCart(Long.parseLong(request.getUserUuid()), Long.parseLong(request.getFoodUuid()), request.getQuantity());
             return ResponseEntity.ok().body("Item added to cart successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -38,7 +38,7 @@ public class CartController {
 
     @GetMapping("/{userUuid}")
     public ResponseEntity<?> getCart(@PathVariable String userUuid) {
-        Cart cart = cartService.getCartByUser(userUuid);
+        Cart cart = cartService.getCartByUser(Long.parseLong(userUuid));
         if (cart == null || cart.getItems().isEmpty()) {
             return ResponseEntity.ok(Collections.emptyList());
         }
@@ -48,7 +48,7 @@ public class CartController {
     @PutMapping("/update")
     public ResponseEntity<?> updateCart(@RequestBody CartUpdateRequestDTO request) {
         try {
-            cartService.updateCartItem(request.getCartItemId(), request.getQuantity());
+            cartService.updateCartItem(Long.parseLong(request.getCartItemId()), request.getQuantity());
             return ResponseEntity.ok().body("Cart item updated successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -58,7 +58,7 @@ public class CartController {
     @DeleteMapping("/remove/{cartItemId}")
     public ResponseEntity<?> removeCartItem(@PathVariable String cartItemId) {
         try {
-            cartService.removeCartItem(cartItemId);
+            cartService.removeCartItem(Long.parseLong(cartItemId));
             return ResponseEntity.ok().body("Cart item removed successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -67,7 +67,7 @@ public class CartController {
 
     @DeleteMapping("/clear/{userUuid}")
     public ResponseEntity<Void> clearCart(@PathVariable String userUuid) {
-        cartService.clearCart(userUuid);
+        cartService.clearCart(Long.parseLong(userUuid));
         return ResponseEntity.ok().build();
     }
 }
