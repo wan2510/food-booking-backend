@@ -1,13 +1,15 @@
 package com.app.food_booking_backend.service;
 
-import com.app.food_booking_backend.model.dto.FoodDTO;
-import com.app.food_booking_backend.model.request.FoodRequest;
 import java.util.List;
 
+import com.app.food_booking_backend.model.request.CreateFoodRequest;
+import com.app.food_booking_backend.model.request.UpdateFoodRequest;
+import com.app.food_booking_backend.model.response.FoodResponse;
+
 public interface FoodService {
-    List<FoodDTO> getAllFoods();
-    FoodDTO getFoodById(Long id);
-    FoodDTO createFood(FoodRequest request);
-    FoodDTO updateFood(Long id, FoodRequest request);
-    void deleteFood(Long id);
+    List<FoodResponse> getAllFoods();
+    FoodResponse getFoodById(String uuid);
+    FoodResponse createFood(CreateFoodRequest request);
+    FoodResponse updateFood(String uuid, UpdateFoodRequest request);
+    void deleteFood(String uuid);
 }

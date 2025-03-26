@@ -1,7 +1,5 @@
 package com.app.food_booking_backend.config;
 
-import com.app.food_booking_backend.filter.AuthFilter;
-import com.app.food_booking_backend.service.UserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.app.food_booking_backend.filter.AuthFilter;
+import com.app.food_booking_backend.service.UserDetailService;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -29,24 +30,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) ->
-                        authorize
-                                .requestMatchers(
-                                        "/api/auth/*",
-                                        "/send-otp/*"
-                                )
-                                .permitAll()
-
-                                .anyRequest()
-                                .authenticated()
-                )
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
-
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests((authorize) ->
+                    authorize
+                            .requestMatchers(
+                                    "/api/auth/**",
+                                    "/api/email/**",
+                                    "/api/food/**",
+                                    "/api/cart/**",
+                                    "/api/category/**",
+                                    "/Image/**",
+                                    "/api/bookings"
+                            )
+                            .permitAll()
+                            .anyRequest().authenticated()
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+}
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -19,46 +20,33 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "role")
+@Entity(name = "category")
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(
-            name = "uuid",
-            length = 36,
-            nullable = false,
-            unique = true
-    )
+    @Column(name = "uuid", length = 36, nullable = false, unique = true)
     private String uuid;
 
-    @Column(
-            name = "name",
-            length = 255,
-            nullable = false,
-            unique = true
-    )
+    @Column(name = "name", length = 255, nullable = false, unique = true)
     private String name;
 
-    @Column(
-            name = "description",
-            length = 255
-    )
+    @Column(name = "description", length = 255)
     private String description;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @CreationTimestamp
-    @Column(name = "update_at", nullable = false)
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "category")
     @JsonManagedReference
-    private List<User> users;
+    private List<Food> foods;
 }

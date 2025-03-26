@@ -1,16 +1,21 @@
 package com.app.food_booking_backend.model.dto;
 
-import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class FoodDTO {
-    private Long id;
+    private String uuid;
     private String name;
     private String description;
-    private double price;
-    private double rating;
+    private String status;
+    private String categoryId;
+    private String imageUrl;
+    private BigDecimal price;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

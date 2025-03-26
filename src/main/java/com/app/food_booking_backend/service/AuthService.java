@@ -1,5 +1,16 @@
 package com.app.food_booking_backend.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.app.food_booking_backend.exception.InvalidEmailException;
 import com.app.food_booking_backend.exception.UnauthorizedException;
 import com.app.food_booking_backend.model.dto.UserDTO;
@@ -13,13 +24,8 @@ import com.app.food_booking_backend.repository.RoleRepository;
 import com.app.food_booking_backend.repository.UserRepository;
 import com.app.food_booking_backend.util.JWTUtil;
 import com.app.food_booking_backend.util.Validation;
+
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -29,19 +35,26 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
-
+    private final EmailService emailService;
+    private final Map<String, String> otpStorage = new HashMap<>();
+    private final Map<String, Long> otpExpiry = new HashMap<>();
+    
+    private static final long OTP_EXPIRY_DURATION = 5 * 60 * 1000;
+    
     public AuthService(
             UserRepository userRepository,
             RoleRepository roleRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            ModelMapper modelMapper
+            ModelMapper modelMapper,
+            EmailService emailService
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.modelMapper = modelMapper;
+        this.emailService = emailService;
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
@@ -79,5 +92,59 @@ public class AuthService {
                 .role(role)
                 .build();
         return userRepository.save(newUser);
+    }
+
+    public void sendOTP(String email) {
+        String otp = generateOTP();
+        otpStorage.put(email, otp);
+        otpExpiry.put(email, System.currentTimeMillis() + OTP_EXPIRY_DURATION);
+
+        String subject = "Mã xác thực OTP của bạn";
+        String message = "Mã OTP của bạn là: " + otp + ". Vui lòng nhập mã này để tiếp tục.\n"
+                       + "Lưu ý: Mã này sẽ hết hạn sau 5 phút.";
+        emailService.sendEmail(email, subject, message);
+    }
+
+    public boolean verifyOTP(String email, String otp) {
+        String storedOTP = otpStorage.get(email);
+        Long expiryTime = otpExpiry.get(email);
+
+        if (storedOTP == null || expiryTime == null || !storedOTP.equals(otp)) {
+            return false;
+        }
+
+        if (System.currentTimeMillis() > expiryTime) {
+            otpStorage.remove(email);
+            otpExpiry.remove(email);
+            return false;
+        }
+
+        otpStorage.remove(email);
+        otpExpiry.remove(email);
+        return true;
+    }
+
+    private String generateOTP() {
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(999999);
+        return String.valueOf(otp);
+    }
+    public boolean resetPassword(String email, String otp, String newPassword) {
+        if (!verifyOTP(email, otp)) {
+            return false;
+        }
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new InvalidEmailException("Email không tồn tại trong hệ thống");
+        }
+
+        user.setHashPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        otpStorage.remove(email);
+        otpExpiry.remove(email);
+
+        return true;
     }
 }
