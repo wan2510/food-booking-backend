@@ -1,6 +1,7 @@
 package com.app.food_booking_backend.service;
 
 import com.app.food_booking_backend.model.entity.User;
+import com.app.food_booking_backend.model.entity.enums.UserStatusEnum;
 import com.app.food_booking_backend.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,14 +24,24 @@ public class UserDetailService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
+        
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getHashPassword(), authorities);
+        
+        return new org.springframework.security.core.userdetails.User(
+            user.getEmail(),
+            user.getHashPassword(),
+            user.getStatus() == UserStatusEnum.ACTIVE,  
+            true, 
+            true, 
+            true, 
+            authorities
+        );
     }
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

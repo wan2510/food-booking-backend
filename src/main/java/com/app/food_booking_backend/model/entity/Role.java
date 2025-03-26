@@ -55,7 +55,7 @@ public class Role {
     private LocalDateTime createdAt;
 
     @CreationTimestamp
-    @Column(name = "update_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "role")

@@ -1,0 +1,43 @@
+config:
+  target: "http://localhost:8080/api/food"  # Cấu hình địa chỉ backend
+  phases:
+    - duration: 60  # Chạy test trong 60 giây
+      arrivalRate: 5  # 5 virtual users mỗi giây
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - flow:
+      - log: "Lấy danh sách tất cả món ăn"
+      - get:
+          url: "/"
+          capture:
+            - json: "$[0].uuid"  # Lấy UUID của món ăn đầu tiên
+              as: "foodUuid"
+
+      - log: "Tìm kiếm món ăn"
+      - get:
+          url: "/search?query=pizza"
+
+      - log: "Lấy thông tin món ăn theo UUID"
+      - get:
+          url: "/{{ foodUuid }}"
+
+      - log: "Tải ảnh món ăn lên"
+      - post:
+          url: "/{{ foodUuid }}/upload-image"
+          headers:
+            Content-Type: "multipart/form-data"
+          formData:
+            image: "image.png"  # Đổi thành đường dẫn ảnh trên máy bạn
+          expect:
+            - statusCode: 200
+
+      - log: "Cập nhật ảnh món ăn"
+      - put:
+          url: "/{{ foodUuid }}/update-image"
+          json:
+            imageUrl: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+          expect:
+            - statusCode: 200

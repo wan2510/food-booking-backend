@@ -7,7 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
+@Setter
 @Builder
 @Data
 @NoArgsConstructor
@@ -15,17 +16,12 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
     private String uuid;
     private String email;
-    private String fullName;
     private String hashPassword;
+    private String fullName;
     private String phone;
     private String status;
     private String avatarUrl;
     private String role;
-    private String roleId;
-    private String roleName;
-    private LocalDate startDate;
-    private String note;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
 }

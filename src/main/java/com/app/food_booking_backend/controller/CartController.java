@@ -2,6 +2,8 @@ package com.app.food_booking_backend.controller;
 
 import java.util.Collections;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.food_booking_backend.model.dto.CartDTO;
 import com.app.food_booking_backend.model.dto.CartRequestDTO;
 import com.app.food_booking_backend.model.dto.CartUpdateRequestDTO;
-import com.app.food_booking_backend.model.entity.Cart;
 import com.app.food_booking_backend.service.CartService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
 public class CartController {
+    private static final Logger logger = LoggerFactory.getLogger(CartController.class);
 
     private final CartService cartService;
 
@@ -32,7 +35,8 @@ public class CartController {
             cartService.addToCart(Long.parseLong(request.getUserUuid()), Long.parseLong(request.getFoodUuid()), request.getQuantity());
             return ResponseEntity.ok().body("Item added to cart successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.error("Error adding item to cart: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
@@ -51,7 +55,8 @@ public class CartController {
             cartService.updateCartItem(Long.parseLong(request.getCartItemId()), request.getQuantity());
             return ResponseEntity.ok().body("Cart item updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.error("Error updating cart item: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
@@ -61,7 +66,8 @@ public class CartController {
             cartService.removeCartItem(Long.parseLong(cartItemId));
             return ResponseEntity.ok().body("Cart item removed successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.error("Error removing cart item: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 

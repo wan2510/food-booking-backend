@@ -1,0 +1,171 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.0": 300,
+      "vusers.created": 300,
+      "http.requests": 300,
+      "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 300,
+      "errors.ECONNREFUSED": 300,
+      "vusers.failed": 300
+    },
+    "rates": {
+      "http.request_rate": 5
+    },
+    "firstCounterAt": 1742777743375,
+    "lastCounterAt": 1742777802617,
+    "firstMetricAt": 1742777743375,
+    "lastMetricAt": 1742777802617,
+    "period": 1742777800000,
+    "summaries": {},
+    "histograms": {}
+  },
+  "intermediate": [
+    {
+      "counters": {
+        "vusers.created_by_name.0": 35,
+        "vusers.created": 35,
+        "http.requests": 35,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 35,
+        "errors.ECONNREFUSED": 35,
+        "vusers.failed": 35
+      },
+      "rates": {
+        "http.request_rate": 5
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777743375,
+      "lastCounterAt": 1742777749618,
+      "firstMetricAt": 1742777743375,
+      "lastMetricAt": 1742777749618,
+      "period": "1742777740000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 50,
+        "vusers.created": 50,
+        "http.requests": 50,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 50,
+        "errors.ECONNREFUSED": 50,
+        "vusers.failed": 50
+      },
+      "rates": {
+        "http.request_rate": 5
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777750372,
+      "lastCounterAt": 1742777759618,
+      "firstMetricAt": 1742777750372,
+      "lastMetricAt": 1742777759618,
+      "period": "1742777750000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 50,
+        "vusers.created": 50,
+        "http.requests": 50,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 50,
+        "errors.ECONNREFUSED": 50,
+        "vusers.failed": 50
+      },
+      "rates": {
+        "http.request_rate": 5
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777760372,
+      "lastCounterAt": 1742777769617,
+      "firstMetricAt": 1742777760372,
+      "lastMetricAt": 1742777769617,
+      "period": "1742777760000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 50,
+        "vusers.created": 50,
+        "http.requests": 50,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 50,
+        "errors.ECONNREFUSED": 50,
+        "vusers.failed": 50
+      },
+      "rates": {
+        "http.request_rate": 5
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777770372,
+      "lastCounterAt": 1742777779617,
+      "firstMetricAt": 1742777770372,
+      "lastMetricAt": 1742777779617,
+      "period": "1742777770000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 50,
+        "vusers.created": 50,
+        "http.requests": 50,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 50,
+        "errors.ECONNREFUSED": 50,
+        "vusers.failed": 50
+      },
+      "rates": {
+        "http.request_rate": 5
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777780372,
+      "lastCounterAt": 1742777789617,
+      "firstMetricAt": 1742777780372,
+      "lastMetricAt": 1742777789617,
+      "period": "1742777780000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 50,
+        "vusers.created": 50,
+        "http.requests": 50,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 50,
+        "errors.ECONNREFUSED": 50,
+        "vusers.failed": 50
+      },
+      "rates": {
+        "http.request_rate": 5
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777790372,
+      "lastCounterAt": 1742777799616,
+      "firstMetricAt": 1742777790372,
+      "lastMetricAt": 1742777799616,
+      "period": "1742777790000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 15,
+        "vusers.created": 15,
+        "http.requests": 15,
+        "plugins.metrics-by-endpoint./api/food/.errors.ECONNREFUSED": 15,
+        "errors.ECONNREFUSED": 15,
+        "vusers.failed": 15
+      },
+      "rates": {
+        "http.request_rate": 8
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1742777800371,
+      "lastCounterAt": 1742777802617,
+      "firstMetricAt": 1742777800371,
+      "lastMetricAt": 1742777802617,
+      "period": "1742777800000",
+      "summaries": {},
+      "histograms": {}
+    }
+  ]
+}

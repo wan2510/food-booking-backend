@@ -20,6 +20,11 @@ spring:
     username: root
     password: ""
 
+  jpa:
+      show-sql: true
+      hibernate:
+          ddl-auto: update
+
   flyway:
     enabled: true
     validate-on-migrate: true
@@ -29,6 +34,16 @@ spring:
   web:
     resources:
       static-locations: file:Image/
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+cloudinary:
+  cloud-name: dlutz1pvz
+  api-key: 692696427816334
+  api-secret: g6nQ6n95Qg-VgMV0mK2Y8bthJzc
 
 logging:
   level:

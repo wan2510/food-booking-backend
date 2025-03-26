@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,11 +22,14 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/food")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class FoodController {
     private final FoodService foodService;
+    private final CloudinaryService cloudinaryService;
 
-    public FoodController(FoodService foodService) {
+    public FoodController(FoodService foodService, CloudinaryService cloudinaryService) {
         this.foodService = foodService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     // Lấy danh sách tất cả món ăn

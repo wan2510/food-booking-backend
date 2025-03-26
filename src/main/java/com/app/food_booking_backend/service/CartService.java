@@ -25,7 +25,16 @@ public class CartService {
         User user = userRepository.findById(userId.toString())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return cartRepository.findByUser(user);
+        Cart cart = cartRepository.findByUser(user);
+        if (cart == null) {
+            return CartDTO.builder()
+                .userUuid(userUuid)
+                .items(java.util.Collections.emptyList())
+                .totalAmount(0)
+                .build();
+        }
+
+        return toCartDTO(cart);
     }
 
     @Transactional

@@ -1,13 +1,18 @@
 package com.app.food_booking_backend.model.request;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
+@Builder
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
 public class RegisterRequest {
     private String email;
     private String password;
     private String fullName;
     private String phone;
+    private String otp;
 }
