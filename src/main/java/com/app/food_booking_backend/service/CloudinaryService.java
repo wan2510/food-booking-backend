@@ -23,7 +23,6 @@ public class CloudinaryService {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File không được để trống");
         }
-
         // Tạo tên file ngẫu nhiên để tránh trùng lặp
         String fileName = UUID.randomUUID().toString();
         
@@ -36,8 +35,7 @@ public class CloudinaryService {
                 "resource_type", "auto"
             )
         );
-        
-        // Trả về URL của ảnh đã upload
+        // Trả về URL của ảnh đã upload (sử dụng secure_url)
         return uploadResult.get("secure_url").toString();
     }
     
@@ -46,39 +44,28 @@ public class CloudinaryService {
             if (imageUrl == null || imageUrl.isEmpty()) {
                 return;
             }
-            
             // Lấy public_id từ URL
             String publicId = extractPublicIdFromUrl(imageUrl);
-            
             if (publicId != null) {
-                // Xóa ảnh từ Cloudinary
-                cloudinary.uploader().destroy(
-                    publicId,
-                    ObjectUtils.emptyMap()
-                );
+                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             }
         } catch (Exception e) {
-            // Log lỗi nhưng không throw exception để không ảnh hưởng đến luồng chính
             System.err.println("Lỗi khi xóa ảnh từ Cloudinary: " + e.getMessage());
         }
     }
     
     private String extractPublicIdFromUrl(String imageUrl) {
-        // Ví dụ URL: https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/food-booking/abc123.jpg
-        // Public ID: food-booking/abc123
         try {
             if (imageUrl.contains("/upload/")) {
                 String[] parts = imageUrl.split("/upload/");
                 if (parts.length > 1) {
                     String part = parts[1];
-                    // Loại bỏ version nếu có
                     if (part.startsWith("v")) {
                         int slashIndex = part.indexOf("/");
                         if (slashIndex != -1) {
                             part = part.substring(slashIndex + 1);
                         }
                     }
-                    // Loại bỏ phần mở rộng file
                     int dotIndex = part.lastIndexOf(".");
                     if (dotIndex != -1) {
                         part = part.substring(0, dotIndex);
@@ -91,4 +78,4 @@ public class CloudinaryService {
         }
         return null;
     }
-} 
+}

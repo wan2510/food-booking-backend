@@ -1,0 +1,39 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 60  # Kiểm thử trong 60 giây
+      arrivalRate: 10  # Gửi 10 request mỗi giây
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Cart API Performance Test"
+    flow:
+      - post:
+          url: "/api/cart/add"
+          json:
+            userUuid: "test-user-123"
+            foodUuid: "food-abc-456"
+            quantity: 2
+          capture:
+            - json: "$.message"
+              as: "addMessage"
+
+      - get:
+          url: "/api/cart/test-user-123"
+          capture:
+            - json: "$.items[0].cartItemId"
+              as: "cartItemId"
+
+      - put:
+          url: "/api/cart/update"
+          json:
+            cartItemId: "{{ cartItemId }}"
+            quantity: 3
+
+      - delete:
+          url: "/api/cart/remove/{{ cartItemId }}"
+
+      - delete:
+          url: "/api/cart/clear/test-user-123"

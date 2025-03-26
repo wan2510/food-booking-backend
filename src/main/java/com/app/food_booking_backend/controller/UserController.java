@@ -25,8 +25,10 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
+        // Lấy email từ Authentication (Spring Security)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
+        
         UserDTO userDTO = userService.getUserProfile(email);
         return ResponseEntity.ok(userDTO);
     }
@@ -35,7 +37,8 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
+
         UserDTO updatedUser = userService.updateUserProfile(email, updateProfileRequest);
         return ResponseEntity.ok(updatedUser);
     }
-} 
+}

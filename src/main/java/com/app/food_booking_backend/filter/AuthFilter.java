@@ -17,7 +17,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+@Deprecated
 @Component
 public class AuthFilter extends OncePerRequestFilter {
 
@@ -38,7 +38,6 @@ public class AuthFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
-        // Sử dụng hằng số TOKEN_PREFIX từ JWTUtil
         if (authHeader != null && authHeader.startsWith(JWTUtil.TOKEN_PREFIX)) {
             token = authHeader.substring(JWTUtil.TOKEN_PREFIX.length());
             username = JWTUtil.getUserIdFromToken(token);

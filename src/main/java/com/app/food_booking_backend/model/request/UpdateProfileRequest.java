@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateProfileRequest {
-    private String fullName;
+    private String fullName; 
     private String phone;
 } 

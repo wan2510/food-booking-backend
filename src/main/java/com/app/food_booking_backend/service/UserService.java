@@ -27,7 +27,7 @@ public class UserService {
         if (user == null) {
             throw new ResourceNotFoundException("Không tìm thấy người dùng với email: " + email);
         }
-        
+
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.setRole(user.getRole().getName());
         return userDTO;
@@ -39,20 +39,19 @@ public class UserService {
         if (user == null) {
             throw new ResourceNotFoundException("Không tìm thấy người dùng với email: " + email);
         }
-        
+
         // Cập nhật thông tin người dùng
         if (updateProfileRequest.getFullName() != null) {
             user.setFullName(updateProfileRequest.getFullName());
         }
-        
         if (updateProfileRequest.getPhone() != null) {
             user.setPhone(updateProfileRequest.getPhone());
         }
-        
+
         User updatedUser = userRepository.save(user);
-        
+
         UserDTO userDTO = modelMapper.map(updatedUser, UserDTO.class);
         userDTO.setRole(updatedUser.getRole().getName());
         return userDTO;
     }
-} 
+}
