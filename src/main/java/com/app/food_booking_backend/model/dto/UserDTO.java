@@ -1,5 +1,6 @@
 package com.app.food_booking_backend.model.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;

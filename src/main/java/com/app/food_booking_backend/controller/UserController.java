@@ -1,8 +1,8 @@
 package com.app.food_booking_backend.controller;
 
-import java.util.List;
-import java.util.Map;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,31 +13,34 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.app.food_booking_backend.model.dto.UserDTO;
-import com.app.food_booking_backend.model.entity.User;
-import com.app.food_booking_backend.model.request.UpdateProfileRequest;
 import com.app.food_booking_backend.service.UserService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @GetMapping("/staff")
+    public ResponseEntity<List<UserDTO>> getAllStaff() {
+        return ResponseEntity.ok(userService.getAllStaff());
     }
 
-    @GetMapping("/getListUser")
-    public List<UserDTO> getUsers() {
-        return userService.getUsers();
+    @GetMapping("/staff/status/{status}")
+    public ResponseEntity<List<UserDTO>> getStaffByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(userService.getStaffByStatus(status));
     }
 
-    @PostMapping("/addNewUser")
-    public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.createAccount(userDTO));
+    @GetMapping("/staff/search")
+    public ResponseEntity<List<UserDTO>> searchStaff(@RequestParam String keyword) {
+        return ResponseEntity.ok(userService.searchStaff(keyword));
     }
 
     @PutMapping("/updateUser")
@@ -58,13 +61,20 @@ public class UserController {
         UserDTO userDTO = userService.getUserProfile(email);
         return ResponseEntity.ok(userDTO);
     }
+    
+    @PostMapping("/staff")
+    public ResponseEntity<UserDTO> createStaff(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.createStaff(userDTO));
+    }
 
-    @PutMapping("/profile")
-    public ResponseEntity<UserDTO> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
+    @PutMapping("/staff/{uuid}")
+    public ResponseEntity<UserDTO> updateStaff(@PathVariable String uuid, @RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.updateStaff(uuid, userDTO));
+    }
 
-        UserDTO updatedUser = userService.updateUserProfile(email, updateProfileRequest);
-        return ResponseEntity.ok(updatedUser);
+    @DeleteMapping("/staff/{uuid}")
+    public ResponseEntity<Void> deleteStaff(@PathVariable String uuid) {
+        userService.deleteStaff(uuid);
+        return ResponseEntity.ok().build();
     }
 }

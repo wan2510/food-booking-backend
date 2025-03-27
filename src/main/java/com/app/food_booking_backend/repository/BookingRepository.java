@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.app.food_booking_backend.model.entity.Booking;
 
 public interface BookingRepository extends JpaRepository<Booking, String> {
-    List<Booking> findByUserUuid(String userId);
+    List<Booking> findByUser_Uuid(String userId);
 }

@@ -31,11 +31,27 @@ public class SecurityConfig {
     }
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/email/**").permitAll()
-                .anyRequest().authenticated()
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests((authorize) ->
+                    authorize
+                            .requestMatchers(
+                                    "/api/auth/**",
+                                    "/api/email/**",
+                                    "/api/food/**",
+                                    "/api/cart/**",
+                                    "/api/category/**",
+                                    "/Image/**",
+                                    "/api/bookings",
+                                    "/api/invoice/**",
+                                    "/api/notifications/**",
+                                    "/api/shifts/**",
+                                    "/api/users/**",
+                                    "/api/attendance/**"
+                            )
+                            .permitAll()
+                            .anyRequest().authenticated()
             )
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())

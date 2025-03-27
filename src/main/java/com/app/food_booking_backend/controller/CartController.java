@@ -32,9 +32,8 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<?> addToCart(@RequestBody CartRequestDTO request) {
         try {
-            logger.info("Adding item to cart: {}", request);
-            cartService.addToCart(request.getUserUuid(), request.getFoodUuid(), request.getQuantity());
-            return ResponseEntity.ok().body(Collections.singletonMap("message", "Item added to cart successfully"));
+            cartService.addToCart(Long.parseLong(request.getUserUuid()), Long.parseLong(request.getFoodUuid()), request.getQuantity());
+            return ResponseEntity.ok().body("Item added to cart successfully");
         } catch (Exception e) {
             logger.error("Error adding item to cart: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
@@ -43,26 +42,18 @@ public class CartController {
 
     @GetMapping("/{userUuid}")
     public ResponseEntity<?> getCart(@PathVariable String userUuid) {
-        try {
-            CartDTO cart = cartService.getCartByUser(userUuid);
-            logger.info("Retrieved cart for user {}: {}", userUuid, cart);
-            
-            if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
-                return ResponseEntity.ok().body(Collections.singletonMap("items", Collections.emptyList()));
-            }
-            return ResponseEntity.ok().body(cart);
-        } catch (Exception e) {
-            logger.error("Error getting cart for user {}: {}", userUuid, e.getMessage());
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+        Cart cart = cartService.getCartByUser(Long.parseLong(userUuid));
+        if (cart == null || cart.getItems().isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
         }
+        return ResponseEntity.ok(cart);
     }
 
     @PutMapping("/update")
     public ResponseEntity<?> updateCart(@RequestBody CartUpdateRequestDTO request) {
         try {
-            logger.info("Updating cart item: {}", request);
-            cartService.updateCartItem(request.getCartItemId(), request.getQuantity());
-            return ResponseEntity.ok().body(Collections.singletonMap("message", "Cart item updated successfully"));
+            cartService.updateCartItem(Long.parseLong(request.getCartItemId()), request.getQuantity());
+            return ResponseEntity.ok().body("Cart item updated successfully");
         } catch (Exception e) {
             logger.error("Error updating cart item: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
@@ -72,9 +63,8 @@ public class CartController {
     @DeleteMapping("/remove/{cartItemId}")
     public ResponseEntity<?> removeCartItem(@PathVariable String cartItemId) {
         try {
-            logger.info("Removing cart item: {}", cartItemId);
-            cartService.removeCartItem(cartItemId);
-            return ResponseEntity.ok().body(Collections.singletonMap("message", "Cart item removed successfully"));
+            cartService.removeCartItem(Long.parseLong(cartItemId));
+            return ResponseEntity.ok().body("Cart item removed successfully");
         } catch (Exception e) {
             logger.error("Error removing cart item: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
@@ -82,14 +72,8 @@ public class CartController {
     }
 
     @DeleteMapping("/clear/{userUuid}")
-    public ResponseEntity<?> clearCart(@PathVariable String userUuid) {
-        try {
-            logger.info("Clearing cart for user: {}", userUuid);
-            cartService.clearCart(userUuid);
-            return ResponseEntity.ok().body(Collections.singletonMap("message", "Cart cleared successfully"));
-        } catch (Exception e) {
-            logger.error("Error clearing cart for user {}: {}", userUuid, e.getMessage());
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
-        }
+    public ResponseEntity<Void> clearCart(@PathVariable String userUuid) {
+        cartService.clearCart(Long.parseLong(userUuid));
+        return ResponseEntity.ok().build();
     }
 }

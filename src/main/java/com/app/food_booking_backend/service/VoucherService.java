@@ -1,102 +1,112 @@
 package com.app.food_booking_backend.service;
 
-import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import com.app.food_booking_backend.exception.ResourceNotFoundException;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.app.food_booking_backend.repository.VoucherRepository;
 import com.app.food_booking_backend.model.dto.VoucherDTO;
 import com.app.food_booking_backend.model.entity.Voucher;
-import com.app.food_booking_backend.model.entity.enums.VoucherStatusEnum;
+import com.app.food_booking_backend.repository.VoucherRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class VoucherService {
 
-    private final VoucherRepository voucherRepository;
-    private final ModelMapper modelMapper;
+    @Autowired
+    private VoucherRepository voucherRepository;
 
-    public VoucherService(VoucherRepository voucherRepository, ModelMapper modelMapper) {
-        this.voucherRepository = voucherRepository;
-        this.modelMapper = modelMapper;
-    }
-
-    // Chuyển từ VoucherDTO sang Voucher (entity)
-    private Voucher toVoucher(VoucherDTO voucherDTO) {
-        if (voucherDTO == null) {
-            throw new IllegalArgumentException("Không nhận được thông tin voucher!");
-        }
-        Voucher voucher = modelMapper.map(voucherDTO, Voucher.class);
-        return voucher;
-    }
-
-    // Chuyển từ Voucher (entity) sang VoucherDTO
-    private VoucherDTO toVoucherDTO(Voucher voucher) {
-        if (voucher == null) {
-            throw new IllegalArgumentException("Thông tin Voucher không nhận diện được!");
-        }
-        return modelMapper.map(voucher, VoucherDTO.class);
-    }
-
-    // Lấy danh sách tất cả voucher chưa bị xóa từ DB và chuyển thành DTO
-    public List<VoucherDTO> getVouchers() {
-        try {
-            return voucherRepository.findActiveVouchers().stream()
-                .map(this::toVoucherDTO)
+    public List<VoucherDTO> getAllVouchers() {
+        return voucherRepository.findAll().stream()
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi lấy danh sách voucher: " + e.getMessage());
-        }
     }
 
-    // Thêm một voucher mới vào DB
-    public Voucher addVoucher(VoucherDTO voucherDTO) {
-        try {
-            Voucher voucher = toVoucher(voucherDTO);
-            // Không ghi đè deletedAt, sử dụng giá trị từ client
-            return voucherRepository.save(voucher);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thêm voucher: " + e.getMessage());
-        }
+    public VoucherDTO getVoucherByUuid(String uuid) {
+        Voucher voucher = voucherRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Voucher not found with UUID: " + uuid));
+        return convertToDTO(voucher);
     }
 
-    // Cập nhật thông tin một voucher
-    public Voucher updateVoucher(VoucherDTO voucherDTO) {
-        try {
-            Optional<Voucher> existingVoucher = voucherRepository.findById(voucherDTO.getId());
-            if (existingVoucher.isPresent()) {
-                Voucher voucher = existingVoucher.get();
-                modelMapper.map(voucherDTO, voucher);
-                return voucherRepository.save(voucher);
-            } else {
-                throw new RuntimeException("Không tìm thấy voucher với id: " + voucherDTO.getId());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi cập nhật voucher: " + e.getMessage());
-        }
-    }
-
-    // Chạy tự động mỗi ngày lúc 0h để cập nhật trạng thái voucher hết hạn
-    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
-    public void updateExpiredVouchers() {
-        try {
-            List<Voucher> expiredVouchers = voucherRepository.findExpiredVouchers(LocalDateTime.now());
-            expiredVouchers.forEach(voucher -> voucher.setStatus(VoucherStatusEnum.INACTIVE));
-            voucherRepository.saveAll(expiredVouchers);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi cập nhật trạng thái voucher hết hạn: " + e.getMessage());
-        }
+    public VoucherDTO createVoucher(VoucherDTO voucherDTO) {
+        validateVoucherDTO(voucherDTO);
+
+        Voucher voucher = Voucher.builder()
+                .uuid(UUID.randomUUID().toString())
+                .code(voucherDTO.getCode())
+                .discount(voucherDTO.getDiscount())
+                .startDate(voucherDTO.getStartDate())
+                .endDate(voucherDTO.getEndDate())
+                .status(voucherDTO.getStatus())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Voucher savedVoucher = voucherRepository.save(voucher);
+        return convertToDTO(savedVoucher);
     }
 
-    // Getter để controller có thể truy cập repository nếu cần
-    public VoucherRepository getVoucherRepository() {
-        return voucherRepository;
+    @Transactional
+    public VoucherDTO updateVoucher(String uuid, VoucherDTO voucherDTO) {
+        validateVoucherDTO(voucherDTO);
+
+        Voucher voucher = voucherRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Voucher not found with UUID: " + uuid));
+
+        voucher.setCode(voucherDTO.getCode());
+        voucher.setDiscount(voucherDTO.getDiscount());
+        voucher.setStartDate(voucherDTO.getStartDate());
+        voucher.setEndDate(voucherDTO.getEndDate());
+        voucher.setStatus(voucherDTO.getStatus());
+        voucher.setUpdatedAt(LocalDateTime.now());
+
+        Voucher updatedVoucher = voucherRepository.save(voucher);
+        return convertToDTO(updatedVoucher);
+    }
+
+    @Transactional
+    public void deleteVoucher(String uuid) {
+        Voucher voucher = voucherRepository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Voucher not found with UUID: " + uuid));
+        voucherRepository.delete(voucher);
+    }
+
+    private VoucherDTO convertToDTO(Voucher voucher) {
+        VoucherDTO dto = new VoucherDTO();
+        dto.setUuid(voucher.getUuid());
+        dto.setCode(voucher.getCode());
+        dto.setDiscount(voucher.getDiscount());
+        dto.setStartDate(voucher.getStartDate());
+        dto.setEndDate(voucher.getEndDate());
+        dto.setStatus(voucher.getStatus());
+        dto.setCreatedAt(voucher.getCreatedAt());
+        dto.setUpdatedAt(voucher.getUpdatedAt());
+        return dto;
+    }
+
+    private void validateVoucherDTO(VoucherDTO voucherDTO) {
+        if (voucherDTO.getCode() == null || voucherDTO.getCode().trim().isEmpty()) {
+            throw new IllegalArgumentException("Voucher code cannot be empty");
+        }
+        if (voucherDTO.getDiscount() == null || voucherDTO.getDiscount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Discount must be greater than 0");
+        }
+        if (voucherDTO.getStartDate() == null || voucherDTO.getEndDate() == null) {
+            throw new IllegalArgumentException("Start date and end date cannot be null");
+        }
+        if (voucherDTO.getEndDate().isBefore(voucherDTO.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
+        if (voucherDTO.getStatus() == null || voucherDTO.getStatus().trim().isEmpty()) {
+            throw new IllegalArgumentException("Voucher status cannot be empty");
+        }
     }
 }

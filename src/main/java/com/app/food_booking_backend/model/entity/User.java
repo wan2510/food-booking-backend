@@ -1,5 +1,6 @@
 package com.app.food_booking_backend.model.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -55,5 +56,13 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    // Thêm hai trường mới
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "note")
+    private String note;
 }
