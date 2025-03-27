@@ -37,7 +37,12 @@ public class UserService {
         if (userDTO == null) {
             throw new IllegalArgumentException("Không nhận được thông tin user!");
         }
+        // Ánh xạ từ UserDTO sang User
         User user = modelMapper.map(userDTO, User.class);
+        // Mã hóa hashPassword và gán vào user
+        if (userDTO.getHashPassword() != null) {
+            user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
+        }
         user.setRole(roleRepository.findByName(userDTO.getRole()));
         return user;
     }
@@ -54,10 +59,14 @@ public class UserService {
 
     // Lấy danh sách user chưa bị xóa mềm (status != 'DELETED')
     public List<UserDTO> getUsers() {
+        List<UserDTO> list = userRepository.findActiveUsers().stream()
+                            .map(this::toUserDTO)
+                            .collect(Collectors.toList());
+        for(UserDTO i : list){
+            System.out.println("\n \n \n \n \n \n USERDTO" + i.getStatus() + "\n \n \n \n \n \n" + i.getRole());
+        }
         try {
-            return userRepository.findActiveUsers().stream()
-                    .map(this::toUserDTO)
-                    .collect(Collectors.toList());
+            return list;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách account: " + e.getMessage());
         }
@@ -65,18 +74,6 @@ public class UserService {
 
     // Thêm tài khoản mới
     public User createAccount(UserDTO userDTO) {
-        System.out.println("\n\n\n\n\n\n\n\n\ncó chạy CREATE\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "");
-        System.out.println(" \n \n \n \n THÔNG TIN NHẬN TỪ FONTEND \n \n \n \n" + userDTO.toString());
         try {
             if (userRepository.findByEmail(userDTO.getEmail()) != null) {
                 throw new RuntimeException("Email đã tồn tại!");
@@ -85,42 +82,46 @@ public class UserService {
                 throw new RuntimeException("UUID đã tồn tại!");
             }
             User user = toUser(userDTO);
-            user.setHashPassword(passwordEncoder.encode(user.getHashPassword()));
-            System.out.println(" \n \n \n \n THÔNG TIN TRƯỚC KHI LƯU \n \n \n \n" + user.toString());
             return userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm user: " + e.getMessage());
         }
     }
 
-    public User updateAccount(UserDTO userDTO) {
-        System.out.println("\n\n\n\n\n\n\n\n\ncó chạy UPDATE\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "\\n" + //
-                        "");
-        System.out.println(" \n \n \n \n THÔNG TIN NHẬN TỪ FONTEND \n \n \n \n" + userDTO.toString());
-        try {
-            Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
-            if (!existingUser.isPresent()) {
-                throw new RuntimeException("Không tìm thấy user với id: " + userDTO.getUuid());
-            }
-            User user = existingUser.get();
-            if (userDTO.getHashPassword() != null && !userDTO.getHashPassword().isEmpty()) {
-                user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
-            }
-            System.out.println(" \n \n \n \n THÔNG TIN TRƯỚC KHI LƯU \n \n \n \n" + user.toString());
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi cập nhật user: " + e.getMessage());
+   public User updateAccount(UserDTO userDTO) {
+    System.out.println("\n \n \n \n \n \n USERDTO" + userDTO.toString() + "\n \n \n \n \n \n");
+    try {
+        Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
+        if (!existingUser.isPresent()) {
+            throw new RuntimeException("Không tìm thấy user với id: " + userDTO.getUuid());
         }
+        User user = existingUser.get();
+
+        // Ánh xạ các trường cơ bản
+        user.setEmail(userDTO.getEmail());
+        user.setFullName(userDTO.getFullName());
+        user.setPhone(userDTO.getPhone());
+        user.setAvatarUrl(userDTO.getAvatarUrl());
+
+        // Xử lý role
+        if (userDTO.getRole() != null) {
+            Role role = roleRepository.findByName(userDTO.getRole());
+            if (role == null) {
+                throw new RuntimeException("Vai trò không hợp lệ: " + userDTO.getRole());
+            }
+            user.setRole(role);
+        }
+        // Xử lý hashPassword nếu có
+        if (userDTO.getHashPassword() != null && !userDTO.getHashPassword().isEmpty()) {
+            user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
+        }
+
+        System.out.println("\n \n \n \n \n \n USER" + user.getRole().getName() + "\n \n \n \n \n \n");
+        return userRepository.save(user);
+    } catch (Exception e) {
+        throw new RuntimeException("Lỗi khi cập nhật user: " + e.getMessage());
     }
+}
 
     public UserDTO getUserProfile(String email) {
         User user = userRepository.findByEmail(email);
