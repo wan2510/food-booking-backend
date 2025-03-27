@@ -37,5 +37,7 @@ ALTER TABLE user
 
 INSERT INTO `role` (uuid, name, description, created_at, update_at)
 VALUES
-    ("1827d8b1-9c3f-4aa9-9a0d-fa78503e0a6f", "ROLE_USER", null, NOW(), NOW()),
-    ("d69b211a-d6b2-4d30-a0b9-b3f714175f3d", "ROLE_ADMIN", null, NOW(), NOW());
+    ("1827d8b1-9c3f-4aa9-9a0d-fa78503eUSER", "ROLE_USER", null, NOW(), NOW()),
+    ("d69b211a-d6b2-4d30-a0b9-b3f7141ADMIN", "ROLE_ADMIN", null, NOW(), NOW()),
+    ("d69b211a-d6b2-9c3f-a0b9-fa785NEWUSER", "ROLE_NEW_USER", null, NOW(), NOW()),
+    ("d69b211a-d6b2-a0b9-4aa9-b3f7141STAFF", "ROLE_STAFF", null, NOW(), NOW());
