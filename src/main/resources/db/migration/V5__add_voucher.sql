@@ -1,4 +1,6 @@
 
+
+
 CREATE TABLE IF NOT EXISTS voucher (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
