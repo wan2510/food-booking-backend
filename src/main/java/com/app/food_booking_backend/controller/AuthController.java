@@ -6,16 +6,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.food_booking_backend.model.dto.UserDTO;
+import com.app.food_booking_backend.model.request.ChangePasswordRequest;
 import com.app.food_booking_backend.model.request.LoginRequest;
 import com.app.food_booking_backend.model.request.RegisterRequest;
 import com.app.food_booking_backend.model.request.VerifyOTPRequest;
 import com.app.food_booking_backend.model.response.LoginResponse;
 import com.app.food_booking_backend.service.AuthService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Deprecated
 @RestController
@@ -50,5 +54,13 @@ public class AuthController {
     public boolean sendOTP(@PathVariable("email") String email) {
         authService.sendOTP(email);
         return true;
+    }
+    
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest,
+                                                   HttpServletRequest request) {
+        String email = request.getUserPrincipal().getName();
+        authService.changePassword(email, changePasswordRequest);
+        return ResponseEntity.ok("Mật khẩu đã được thay đổi thành công!");
     }
 }

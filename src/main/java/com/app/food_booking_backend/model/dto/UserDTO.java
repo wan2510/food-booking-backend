@@ -7,13 +7,18 @@ import com.app.food_booking_backend.model.entity.enums.UserStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
+
     private String uuid;
     private String email;
     private String fullName;
