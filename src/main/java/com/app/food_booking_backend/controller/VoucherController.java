@@ -1,49 +1,41 @@
 package com.app.food_booking_backend.controller;
 
-import com.app.food_booking_backend.model.dto.VoucherDTO;
-import com.app.food_booking_backend.service.VoucherService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.app.food_booking_backend.service.*;
+import com.app.food_booking_backend.model.entity.*;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/voucher")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@RequestMapping("/api/vouchers")
 public class VoucherController {
+    private final VoucherService voucherService;
 
-    @Autowired
-    private VoucherService voucherService;
-
-    @GetMapping
-    public ResponseEntity<List<VoucherDTO>> getAllVouchers() {
-        List<VoucherDTO> vouchers = voucherService.getAllVouchers();
-        return ResponseEntity.ok(vouchers);
+    public VoucherController(VoucherService voucherService) {
+        this.voucherService = voucherService;
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<VoucherDTO> getVoucherByUuid(@PathVariable String uuid) {
-        VoucherDTO voucher = voucherService.getVoucherByUuid(uuid);
-        return ResponseEntity.ok(voucher);
+    @GetMapping("/getVouchers")
+    public List<Voucher> getAllVouchers() {
+        return voucherService.getVouchers();
     }
 
-    @PostMapping
-    public ResponseEntity<VoucherDTO> createVoucher(@RequestBody VoucherDTO voucherDTO) {
-        VoucherDTO createdVoucher = voucherService.createVoucher(voucherDTO);
-        return ResponseEntity.ok(createdVoucher);
+    @PostMapping("/addVoucher")
+    public ResponseEntity<Voucher> addVoucher(@RequestBody Voucher voucher) {
+        return ResponseEntity.ok(voucherService.addVoucher(voucher));
     }
 
-    @PutMapping("/{uuid}")
-    public ResponseEntity<VoucherDTO> updateVoucher(@PathVariable String uuid, @RequestBody VoucherDTO voucherDTO) {
-        VoucherDTO updatedVoucher = voucherService.updateVoucher(uuid, voucherDTO);
-        return ResponseEntity.ok(updatedVoucher);
+    @PutMapping("/updateVoucher{id}")
+    public ResponseEntity<?> updateVoucher(@PathVariable String id, @RequestBody Voucher newVoucher) {
+        try {
+            return ResponseEntity.ok(voucherService.updateVoucher(id, newVoucher));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> deleteVoucher(@PathVariable String uuid) {
-        voucherService.deleteVoucher(uuid);
-        return ResponseEntity.ok().build();
-    }
 }
+

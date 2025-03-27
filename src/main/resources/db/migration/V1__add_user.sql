@@ -4,7 +4,7 @@ CREATE TABLE `role`
     name          VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NULL,
     created_at    datetime     NOT NULL,
-    updated_at     datetime     NOT NULL,
+    update_at     datetime     NOT NULL,
     CONSTRAINT pk_role PRIMARY KEY (uuid)
 );
 
@@ -19,7 +19,7 @@ CREATE TABLE user
     avatar_url    VARCHAR(255) NULL,
     role_id       VARCHAR(36)  NOT NULL,
     created_at    datetime     NOT NULL,
-    updated_at     datetime     NOT NULL,
+    update_at     datetime     NOT NULL,
     CONSTRAINT pk_user PRIMARY KEY (uuid)
 );
 
@@ -35,9 +35,7 @@ ALTER TABLE user
 ALTER TABLE user
     ADD CONSTRAINT FK_USER_ON_ROLE FOREIGN KEY (role_id) REFERENCES `role` (uuid);
 
-INSERT INTO `role` (uuid, name, description, created_at, updated_at)
+INSERT INTO `role` (uuid, name, description, created_at, update_at)
 VALUES
     ("1827d8b1-9c3f-4aa9-9a0d-fa78503e0a6f", "ROLE_USER", null, NOW(), NOW()),
-    ("d69b211a-d6b2-4d30-4aa9-b3f714175f3d", "ROLE_ADMIN", null, NOW(), NOW()),
-    ("d69b211a-d6b2-9c3f-a0b9-fa78503e0a6f", "ROLE_NEW_USER", null, NOW(), NOW()),
-    ("d69b211a-d6b2-a0b9-4aa9-b3f714175f3d", "ROLE_STAFF", null, NOW(), NOW());
+    ("d69b211a-d6b2-4d30-a0b9-b3f714175f3d", "ROLE_ADMIN", null, NOW(), NOW());
