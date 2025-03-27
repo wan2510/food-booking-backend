@@ -14,6 +14,7 @@ public class FoodDTO {
     private String description;
     private String status;
     private String categoryId;
+    private String categoryName; 
     private String imageUrl;
     private BigDecimal price;
     private LocalDateTime createdAt;
