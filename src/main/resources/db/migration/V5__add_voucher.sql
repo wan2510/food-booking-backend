@@ -1,19 +1,17 @@
-CREATE TABLE IF NOT EXISTS voucher (
-    id VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+CREATE TABLE voucher (
+    id VARCHAR(36) PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,
-    discount INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    discount_percentage INT NOT NULL,
     max_discount_value INT NOT NULL,
     min_order_value INT NOT NULL,
-    expired_at TIMESTAMP NOT NULL,
+    expired_at DATETIME NOT NULL,
     status VARCHAR(20) NOT NULL,
     type VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    deleted_at DATETIME
 );
 
-
-INSERT INTO voucher (id, name, code, discount, max_discount_value, min_order_value, expired_at, status, type)
-VALUES
-    ('1', 'Khách hàng mới', 'NEW2025', 10, 50000, 200000, '2025-12-31 23:59:59', 'KHẢ_DỤNG', 'FOR_NEW_USERS'),
-    ('2', 'Khách hàng VIP', 'VIP999', 20, 100000, 300000, '2025-12-31 23:59:59', 'KHẢ_DỤNG', 'FOR_VIP_USERS');
+INSERT INTO voucher (id, code, name, discount_percentage, max_discount_value, min_order_value, expired_at, status, type, created_at, updated_at, deleted_at)
+VALUES ('123e4567-e89b-12d3-a456-426614174000', 'VOUCHER1', 'Giảm giá 10%', 10, 50000, 100000, '2025-12-31 23:59:59', 'ACTIVE', 'FOR_ALL_USERS', '2023-10-01 00:00:00', '2023-10-01 00:00:00', NULL);
