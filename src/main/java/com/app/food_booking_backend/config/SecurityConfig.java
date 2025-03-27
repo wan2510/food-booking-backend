@@ -35,7 +35,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/email/**").permitAll()
+                .requestMatchers(
+                    "/api/auth/login", 
+                    "/api/auth/register",
+                    "/api/auth/verify-otp",
+                    "/api/auth/send-otp/**",
+                    "/api/email/**"
+                ).permitAll()
+                .requestMatchers("/api/auth/change-password").authenticated()
                 .anyRequest().authenticated()
             )
             .csrf(AbstractHttpConfigurer::disable)

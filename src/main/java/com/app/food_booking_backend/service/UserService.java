@@ -54,4 +54,19 @@ public class UserService {
         userDTO.setRole(updatedUser.getRole().getName());
         return userDTO;
     }
+    
+    @Transactional
+    public UserDTO updateUserAvatar(String email, String avatarUrl) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResourceNotFoundException("Không tìm thấy người dùng với email: " + email);
+        }
+        
+        user.setAvatarUrl(avatarUrl);
+        User updatedUser = userRepository.save(user);
+        
+        UserDTO userDTO = modelMapper.map(updatedUser, UserDTO.class);
+        userDTO.setRole(updatedUser.getRole().getName());
+        return userDTO;
+    }
 }

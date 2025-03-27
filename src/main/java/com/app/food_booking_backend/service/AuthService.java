@@ -17,6 +17,7 @@ import com.app.food_booking_backend.model.dto.UserDTO;
 import com.app.food_booking_backend.model.entity.Role;
 import com.app.food_booking_backend.model.entity.User;
 import com.app.food_booking_backend.model.entity.enums.UserStatusEnum;
+import com.app.food_booking_backend.model.request.ChangePasswordRequest;
 import com.app.food_booking_backend.model.request.LoginRequest;
 import com.app.food_booking_backend.model.request.RegisterRequest;
 import com.app.food_booking_backend.model.response.LoginResponse;
@@ -127,10 +128,26 @@ public class AuthService {
         otpExpiry.remove(email);
         return true;
     }
+    
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new InvalidEmailException("Không tìm thấy người dùng với email: " + email);
+        }
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getHashPassword())) {
+            throw new UnauthorizedException("Mật khẩu cũ không chính xác");
+        }
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new IllegalArgumentException("Mật khẩu mới không khớp");
+        }
+        user.setHashPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
 
     private String generateOTP() {
         Random random = new Random();
-        int otp = 100000 + random.nextInt(999999);
+        int otp = 100000 + random.nextInt(900000);
         return String.valueOf(otp);
     }
 }
