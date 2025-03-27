@@ -31,6 +31,10 @@ public class UserController {
 
     @GetMapping("/getListUser")
     public List<UserDTO> getUsers() {
+        List<UserDTO> list = userService.getUsers();
+        for(UserDTO i:list){
+            System.out.println(i.toString());
+        }
         return userService.getUsers();
     }
 

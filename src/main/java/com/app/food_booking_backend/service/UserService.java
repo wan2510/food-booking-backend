@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import com.app.food_booking_backend.exception.ResourceNotFoundException;
 import com.app.food_booking_backend.model.dto.UserDTO;
 import com.app.food_booking_backend.model.entity.User;
+import com.app.food_booking_backend.model.entity.Role;
+
 import com.app.food_booking_backend.model.entity.enums.UserStatusEnum;
 import com.app.food_booking_backend.model.request.UpdateProfileRequest;
 import com.app.food_booking_backend.repository.RoleRepository;
@@ -26,7 +25,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder,
+            RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -51,17 +51,22 @@ public class UserService {
         if (user == null) {
             throw new IllegalArgumentException("Thông tin User không nhận diện được!");
         }
+
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.setRole(user.getRole().getName());
         return userDTO;
     }
 
-    // Lấy danh sách user chưa bị xóa mềm (status = 'ACTIVE')
+    // Lấy danh sách user chưa bị xóa mềm (status != 'DELETED')
     public List<UserDTO> getUsers() {
+        List<UserDTO> list = userRepository.findActiveUsers().stream()
+                            .map(this::toUserDTO)
+                            .collect(Collectors.toList());
+        for(UserDTO i : list){
+            System.out.println("\n \n \n \n \n \n USERDTO" + i.getStatus() + "\n \n \n \n \n \n" + i.getRole());
+        }
         try {
-            return userRepository.findActiveUsers().stream()
-                .map(this::toUserDTO)
-                .collect(Collectors.toList());
+            return list;
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách account: " + e.getMessage());
         }
@@ -77,29 +82,46 @@ public class UserService {
                 throw new RuntimeException("UUID đã tồn tại!");
             }
             User user = toUser(userDTO);
-            user.setStatus(UserStatusEnum.ACTIVE);
             return userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm user: " + e.getMessage());
         }
     }
 
-    // Cập nhật tài khoản (bao gồm xóa mềm bằng status)
-    public User updateAccount(UserDTO userDTO) {
-        try {
-            Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
-            if (!existingUser.isPresent()) {
-                throw new RuntimeException("Không tìm thấy user với id: " + userDTO.getUuid());
-            }
-            User user = existingUser.get();
-            // Ánh xạ các trường từ userDTO sang user, trừ hashPassword
-            modelMapper.map(userDTO, user);
-            // Nếu userDTO có hashPassword mới, mã hóa và cập nhật
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi cập nhật user: " + e.getMessage());
+   public User updateAccount(UserDTO userDTO) {
+    System.out.println("\n \n \n \n \n \n USERDTO" + userDTO.toString() + "\n \n \n \n \n \n");
+    try {
+        Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
+        if (!existingUser.isPresent()) {
+            throw new RuntimeException("Không tìm thấy user với id: " + userDTO.getUuid());
         }
+        User user = existingUser.get();
+
+        // Ánh xạ các trường cơ bản
+        user.setEmail(userDTO.getEmail());
+        user.setFullName(userDTO.getFullName());
+        user.setPhone(userDTO.getPhone());
+        user.setAvatarUrl(userDTO.getAvatarUrl());
+
+        // Xử lý role
+        if (userDTO.getRole() != null) {
+            Role role = roleRepository.findByName(userDTO.getRole());
+            if (role == null) {
+                throw new RuntimeException("Vai trò không hợp lệ: " + userDTO.getRole());
+            }
+            user.setRole(role);
+        }
+        // Xử lý hashPassword nếu có
+        if (userDTO.getHashPassword() != null && !userDTO.getHashPassword().isEmpty()) {
+            user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
+        }
+
+        System.out.println("\n \n \n \n \n \n USER" + user.getRole().getName() + "\n \n \n \n \n \n");
+        return userRepository.save(user);
+    } catch (Exception e) {
+        throw new RuntimeException("Lỗi khi cập nhật user: " + e.getMessage());
     }
+}
 
     public UserDTO getUserProfile(String email) {
         User user = userRepository.findByEmail(email);
