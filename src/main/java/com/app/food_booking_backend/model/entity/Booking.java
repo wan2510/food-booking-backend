@@ -6,12 +6,8 @@ import java.time.LocalTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.app.food_booking_backend.model.entity.enums.BookingStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -35,9 +31,14 @@ public class Booking {
     @Column(length = 36, nullable = false, unique = true)
     private String uuid;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(length = 36, nullable = false)
+    private String userUuid;
+
+    @Column(length = 255, nullable = false)
+    private String name;
+
+    @Column(length = 20, nullable = false)
+    private String phone;
 
     @Column(nullable = false)
     private int guests;
@@ -48,9 +49,21 @@ public class Booking {
     @Column(nullable = false)
     private LocalTime time;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private BookingStatus status;
+    @Column(columnDefinition = "TEXT")
+    private String note;
+
+    @Column(name = "table_type", length = 50, nullable = false)
+    private String tableType;
+
+    @Column(length = 255)
+    private String occasion;
+
+    @Column(length = 50, nullable = false)
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "table_id")
+    private TableRestaurant table;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

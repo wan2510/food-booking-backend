@@ -17,11 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.app.food_booking_backend.filter.AuthFilter;
 import com.app.food_booking_backend.service.UserDetailService;
+
 @Deprecated
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    
     private final UserDetailService userDetailService;
     private final AuthFilter authFilter;
 
@@ -29,7 +30,7 @@ public class SecurityConfig {
         this.userDetailService = userDetailService;
         this.authFilter = authFilter;
     }
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -42,12 +43,12 @@ public class SecurityConfig {
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -55,7 +56,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

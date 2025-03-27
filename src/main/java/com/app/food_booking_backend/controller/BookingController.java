@@ -14,7 +14,7 @@ import com.app.food_booking_backend.model.entity.Booking;
 import com.app.food_booking_backend.service.BookingService;
 
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/api/booking")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -30,9 +30,14 @@ public class BookingController {
          String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
          Booking booking = bookingService.createBooking(
                 userId,
+                bookingRequest.getName(),
+                bookingRequest.getPhone(),
                 bookingRequest.getGuests(),
                 bookingRequest.getDate(),
-                bookingRequest.getTime()
+                bookingRequest.getTime(),
+                bookingRequest.getNote(),
+                bookingRequest.getTableType(),
+                bookingRequest.getOccasion()
          );
 
          BookingDTO response = modelMapper.map(booking, BookingDTO.class);

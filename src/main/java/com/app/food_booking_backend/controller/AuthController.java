@@ -17,6 +17,7 @@ import com.app.food_booking_backend.model.request.VerifyOTPRequest;
 import com.app.food_booking_backend.model.response.LoginResponse;
 import com.app.food_booking_backend.service.AuthService;
 
+@Deprecated
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

@@ -27,6 +27,7 @@ import com.app.food_booking_backend.util.Validation;
 
 import jakarta.transaction.Transactional;
 
+@Deprecated
 @Service
 public class AuthService {
 

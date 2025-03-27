@@ -17,8 +17,13 @@ import lombok.NoArgsConstructor;
 public class BookingDTO {
     private String uuid;
     private UserDTO user;
+    private String name;
+    private String phone;
     private int guests;
     private LocalDate date;
     private LocalTime time;
+    private String note;
+    private String tableType;
+    private String occasion;
     private BookingStatus status;
 }

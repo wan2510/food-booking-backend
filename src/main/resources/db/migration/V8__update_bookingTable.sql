@@ -1,0 +1,3 @@
+ALTER TABLE `booking`
+ADD COLUMN table_id INT NULL,
+ADD CONSTRAINT FK_BOOKING_TABLE FOREIGN KEY (table_id) REFERENCES `table_restaurant` (id);
