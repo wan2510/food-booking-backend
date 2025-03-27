@@ -31,10 +31,6 @@ public class UserController {
 
     @GetMapping("/getListUser")
     public List<UserDTO> getUsers() {
-        List<UserDTO> list = userService.getUsers();
-        for(UserDTO i:list){
-            System.out.println(i.toString());
-        }
         return userService.getUsers();
     }
 
@@ -51,7 +47,8 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-@GetMapping("/profile")
+
+    @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
         // Lấy email từ Authentication (Spring Security)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
