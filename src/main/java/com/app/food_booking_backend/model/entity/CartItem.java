@@ -39,6 +39,7 @@ public class CartItem {
     @JoinColumn(name = "food_id", nullable = false)
     private Food food;
 
+
     @Column(nullable = false)
     private int quantity;
 
@@ -58,6 +59,9 @@ public class CartItem {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
+
+    
 
     @PreUpdate
     public void preUpdate() {
