@@ -19,6 +19,7 @@ CREATE TABLE user
     avatar_url    VARCHAR(255) NULL,
     role_id       VARCHAR(36)  NOT NULL,
     created_at    datetime     NOT NULL,
+    updated_at     datetime     NOT NULL,
     CONSTRAINT pk_user PRIMARY KEY (uuid)
 );
 

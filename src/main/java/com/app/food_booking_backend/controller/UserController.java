@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +21,7 @@ import com.app.food_booking_backend.service.UserService;
 
 @RestController
 @RequestMapping("/api/user")
-
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;
@@ -47,12 +48,13 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-@GetMapping("/profile")
+
+    @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
         // Lấy email từ Authentication (Spring Security)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        
+
         UserDTO userDTO = userService.getUserProfile(email);
         return ResponseEntity.ok(userDTO);
     }

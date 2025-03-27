@@ -11,7 +11,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     User findByEmail(String email);
     User findByUuid(String uuid);
 
-    // Lấy danh sách user chưa bị xóa mềm (dựa trên status = 'ACTIVE')
-    @Query("SELECT u FROM User u WHERE u.status = 'ACTIVE'")
+    // Lấy danh sách user chưa bị xóa mềm (status != 'DELETED')
+    @Query("SELECT u FROM User u WHERE u.status != 'DELETED'")
     List<User> findActiveUsers();
 }

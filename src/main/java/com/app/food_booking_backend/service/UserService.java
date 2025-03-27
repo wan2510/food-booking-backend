@@ -26,7 +26,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder,
+            RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -44,6 +45,7 @@ public class UserService {
             user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
         }
         user.setRole(roleRepository.findByName(userDTO.getRole()));
+
         return user;
     }
 
@@ -60,8 +62,8 @@ public class UserService {
     public List<UserDTO> getUsers() {
         try {
             return userRepository.findActiveUsers().stream()
-                .map(this::toUserDTO)
-                .collect(Collectors.toList());
+                    .map(this::toUserDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách account: " + e.getMessage());
         }
@@ -77,7 +79,6 @@ public class UserService {
                 throw new RuntimeException("UUID đã tồn tại!");
             }
             User user = toUser(userDTO);
-            user.setStatus(UserStatusEnum.ACTIVE);
             return userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm user: " + e.getMessage());
@@ -86,6 +87,7 @@ public class UserService {
 
     // Cập nhật tài khoản (bao gồm xóa mềm bằng status)
     public User updateAccount(UserDTO userDTO) {
+        System.out.println("\n \n \n \n \n \n USERDTO" + userDTO.toString() + "\n \n \n \n \n \n");
         try {
             Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
             if (!existingUser.isPresent()) {
@@ -94,6 +96,7 @@ public class UserService {
             User user = existingUser.get();
             // Ánh xạ các trường từ userDTO sang user, trừ hashPassword
             modelMapper.map(userDTO, user);
+            System.out.println("\n \n \n \n \n \n USER" + user.getRole().getName() + "\n \n \n \n \n \n");
             // Nếu userDTO có hashPassword mới, mã hóa và cập nhật
             return userRepository.save(user);
         } catch (Exception e) {
