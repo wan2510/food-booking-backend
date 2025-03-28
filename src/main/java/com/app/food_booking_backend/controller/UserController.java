@@ -1,7 +1,6 @@
 package com.app.food_booking_backend.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,10 +30,7 @@ public class UserController {
 
     @GetMapping("/getListUser")
     public List<UserDTO> getUsers() {
-        List<UserDTO> list = userService.getUsers();
-        for(UserDTO i:list){
-            System.out.println(i.toString());
-        }
+
         return userService.getUsers();
     }
 
@@ -44,14 +40,11 @@ public class UserController {
     }
 
     @PutMapping("/updateUser")
-    public ResponseEntity<?> updateUser(@RequestBody UserDTO userDTO) {
-        try {
-            return ResponseEntity.ok(userService.updateAccount(userDTO));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<User> updateUser(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.updateAccount(userDTO));
     }
-@GetMapping("/profile")
+    
+    @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile() {
         // Lấy email từ Authentication (Spring Security)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

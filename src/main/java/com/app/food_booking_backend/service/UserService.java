@@ -10,11 +10,10 @@ import java.util.stream.Collectors;
 import com.app.food_booking_backend.exception.ResourceNotFoundException;
 import com.app.food_booking_backend.model.dto.UserDTO;
 import com.app.food_booking_backend.model.entity.User;
-import com.app.food_booking_backend.model.entity.Role;
 
 import com.app.food_booking_backend.model.request.UpdateProfileRequest;
-import com.app.food_booking_backend.repository.RoleRepository;
 import com.app.food_booking_backend.repository.UserRepository;
+import com.app.food_booking_backend.repository.RoleRepository;
 
 @Service
 public class UserService {
@@ -24,8 +23,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder,
-            RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -36,11 +34,12 @@ public class UserService {
         if (userDTO == null) {
             throw new IllegalArgumentException("Không nhận được thông tin user!");
         }
-        // Ánh xạ từ UserDTO sang User
         User user = modelMapper.map(userDTO, User.class);
-        // Mã hóa hashPassword và gán vào user
-        if (userDTO.getHashPassword() != null) {
+        // Chỉ băm nếu hashPassword là plaintext và không phải chuỗi băm cũ
+        if (userDTO.getHashPassword() != null && !userDTO.getHashPassword().startsWith("$2a$")) {
             user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
+        } else {
+            user.setHashPassword(userDTO.getHashPassword()); // Giữ nguyên nếu đã là chuỗi băm
         }
         user.setRole(roleRepository.findByName(userDTO.getRole()));
         return user;
@@ -58,14 +57,10 @@ public class UserService {
 
     // Lấy danh sách user chưa bị xóa mềm (status != 'DELETED')
     public List<UserDTO> getUsers() {
-        List<UserDTO> list = userRepository.findActiveUsers().stream()
-                            .map(this::toUserDTO)
-                            .collect(Collectors.toList());
-        for(UserDTO i : list){
-            System.out.println("\n \n \n \n \n \n USERDTO" + i.getStatus() + "\n \n \n \n \n \n" + i.getRole());
-        }
         try {
-            return list;
+            return userRepository.findActiveUsers().stream()
+                    .map(this::toUserDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lấy danh sách account: " + e.getMessage());
         }
@@ -74,6 +69,7 @@ public class UserService {
     // Thêm tài khoản mới
     public User createAccount(UserDTO userDTO) {
         try {
+            System.out.println("\n\n\n\n\n =============VÀO CREATE VỚI DATA DTO =============" + userDTO.toString());
             if (userRepository.findByEmail(userDTO.getEmail()) != null) {
                 throw new RuntimeException("Email đã tồn tại!");
             }
@@ -81,46 +77,31 @@ public class UserService {
                 throw new RuntimeException("UUID đã tồn tại!");
             }
             User user = toUser(userDTO);
+            System.out.println("\n\n\n\n\n ============= ĐÃ UPDATE VỚI DATA  =============\n" + user.getRole().getName() +"\n"+ user.getPhone() +"\n"+ user.getStatus() +"\n"+ user.getFullName());
             return userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm user: " + e.getMessage());
         }
     }
 
-   public User updateAccount(UserDTO userDTO) {
-    System.out.println("\n \n \n \n \n \n USERDTO" + userDTO.toString() + "\n \n \n \n \n \n");
-    try {
-        Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
-        if (!existingUser.isPresent()) {
-            throw new RuntimeException("Không tìm thấy user với id: " + userDTO.getUuid());
-        }
-        User user = existingUser.get();
+    public User updateAccount(UserDTO userDTO) {
+        System.out.println("\n\n\n\n\n ============= VÀO UPDATE VỚI DATA =============\n" + userDTO.toString());
+        try {
 
-        // Ánh xạ các trường cơ bản
-        user.setEmail(userDTO.getEmail());
-        user.setFullName(userDTO.getFullName());
-        user.setPhone(userDTO.getPhone());
-        user.setAvatarUrl(userDTO.getAvatarUrl());
-
-        // Xử lý role
-        if (userDTO.getRole() != null) {
-            Role role = roleRepository.findByName(userDTO.getRole());
-            if (role == null) {
-                throw new RuntimeException("Vai trò không hợp lệ: " + userDTO.getRole());
+            Optional<User> existingUser = userRepository.findById(userDTO.getUuid());
+            if (!existingUser.isPresent()) {
+                throw new RuntimeException("Không tìm thấy user với id: " + userDTO.getUuid());
+            }else{
+                User updateUser = existingUser.get();
+                User newInfo = toUser(userDTO);
+                modelMapper.map(updateUser, newInfo);
+                System.out.println("\n\n\n\n\n ============= ĐÃ UPDATE VỚI DATA  =============\n" +"\n"+ updateUser.getRole() +"\n"+ updateUser.getPhone() +"\n"+ updateUser.getStatus() +"\n"+ updateUser.getFullName());
+                return userRepository.save(toUser(userDTO));
             }
-            user.setRole(role);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi cập nhật user: " + e.getMessage());
         }
-        // Xử lý hashPassword nếu có
-        if (userDTO.getHashPassword() != null && !userDTO.getHashPassword().isEmpty()) {
-            user.setHashPassword(passwordEncoder.encode(userDTO.getHashPassword()));
-        }
-
-        System.out.println("\n \n \n \n \n \n USER" + user.getRole().getName() + "\n \n \n \n \n \n");
-        return userRepository.save(user);
-    } catch (Exception e) {
-        throw new RuntimeException("Lỗi khi cập nhật user: " + e.getMessage());
     }
-}
 
     public UserDTO getUserProfile(String email) {
         User user = userRepository.findByEmail(email);
