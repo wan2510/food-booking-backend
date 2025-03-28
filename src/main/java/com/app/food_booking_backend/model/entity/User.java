@@ -71,8 +71,8 @@ public class User {
     private LocalDateTime createdAt;
 
     @CreationTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @Column(name = "update_at", nullable = false)
+    private LocalDateTime updateAt;
 
     // Thêm hai trường mới
     @Column(name = "start_date")

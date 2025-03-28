@@ -1,185 +1,147 @@
 package com.app.food_booking_backend.service;
 
-import com.app.food_booking_backend.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.app.food_booking_backend.model.dto.ShiftDTO;
+import com.app.food_booking_backend.model.dto.ShiftResponseDTO;
 import com.app.food_booking_backend.model.entity.Shift;
 import com.app.food_booking_backend.model.entity.User;
 import com.app.food_booking_backend.repository.ShiftRepository;
 import com.app.food_booking_backend.repository.UserRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ShiftService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ShiftService.class);
 
     @Autowired
     private ShiftRepository shiftRepository;
 
     @Autowired
     private UserRepository userRepository;
-
-    /**
-     * Lấy tất cả ca làm việc
-     */
-    public List<ShiftDTO> getAllShifts() {
-        logger.info("Fetching all shifts");
-        List<Shift> shifts = shiftRepository.findAll();
-        return shifts.stream()
-                .map(this::convertToDTO)
+    public List<ShiftResponseDTO> getAllShifts() {
+        return shiftRepository.findAll().stream()
+                .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Lấy ca làm việc theo tháng và năm
-     */
-    public List<ShiftDTO> getShiftsByMonth(int month, int year) {
-        if (month < 1 || month > 12) {
-            throw new IllegalArgumentException("Month must be between 1 and 12");
-        }
-        if (year < 1900 || year > 9999) {
-            throw new IllegalArgumentException("Year must be between 1900 and 9999");
-        }
-
-        logger.info("Fetching shifts for month: {} and year: {}", month, year);
-        YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDate startDate = yearMonth.atDay(1);
-        LocalDate endDate = yearMonth.atEndOfMonth();
-
-        List<Shift> shifts = shiftRepository.findByDateBetween(startDate, endDate);
-        return shifts.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public Shift createShift(ShiftDTO shiftDTO) {
+    // Kiểm tra nhân viên
+    Optional<User> userOptional = userRepository.findById(shiftDTO.getStaffId());
+    if (userOptional.isEmpty()) {
+        throw new IllegalArgumentException("Nhân viên không tồn tại!");
+    }
+    User user = userOptional.get();
+    if (!"ACTIVE".equals(user.getStatus())) {
+        throw new IllegalArgumentException("Nhân viên không ở trạng thái hoạt động!");
     }
 
-    /**
-     * Tạo mới ca làm việc
-     */
-    @Transactional
-    public ShiftDTO createShift(ShiftDTO shiftDTO) {
-        validateShiftDTO(shiftDTO);
+    // Kiểm tra trạng thái hợp lệ
+    validateStatus(shiftDTO.getStatus());
 
-        logger.info("Creating new shift: {}", shiftDTO.getName());
-        User staff = userRepository.findById(shiftDTO.getStaffId())
-                .orElseThrow(() -> new ResourceNotFoundException("Staff not found with UUID: " + shiftDTO.getStaffId()));
+    // Chuyển đổi dữ liệu từ DTO
+    try {
+        LocalDate date = LocalDate.parse(shiftDTO.getDate(), DateTimeFormatter.ISO_DATE);
+        LocalTime startTime = LocalTime.parse(shiftDTO.getStartTime());
+        LocalTime endTime = LocalTime.parse(shiftDTO.getEndTime());
 
-        Shift shift = Shift.builder()
-                .uuid(UUID.randomUUID().toString())
-                .name(shiftDTO.getName())
-                .date(shiftDTO.getDate())
-                .startTime(shiftDTO.getStartTime())
-                .endTime(shiftDTO.getEndTime())
-                .staff(staff)
-                .status(shiftDTO.getStatus())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        Shift savedShift = shiftRepository.save(shift);
-        logger.info("Shift created successfully with UUID: {}", savedShift.getUuid());
-        return convertToDTO(savedShift);
-    }
-
-    /**
-     * Cập nhật ca làm việc
-     */
-    @Transactional
-    public ShiftDTO updateShift(String uuid, ShiftDTO shiftDTO) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("Shift UUID cannot be null");
+        // Kiểm tra trùng ca làm việc
+        List<Shift> existingShifts = shiftRepository.findByDateAndTimeAndStaffId(date, startTime, endTime, shiftDTO.getStaffId());
+        if (!existingShifts.isEmpty()) {
+            throw new IllegalArgumentException("Ca làm việc đã tồn tại!");
         }
 
-        validateShiftDTO(shiftDTO);
-
-        logger.info("Updating shift with UUID: {}", uuid);
-        Shift shift = shiftRepository.findById(uuid)
-                .orElseThrow(() -> new ResourceNotFoundException("Shift not found with UUID: " + uuid));
-
-        User staff = userRepository.findById(shiftDTO.getStaffId())
-                .orElseThrow(() -> new ResourceNotFoundException("Staff not found with UUID: " + shiftDTO.getStaffId()));
-
+        // Tạo ca làm việc mới
+        Shift shift = new Shift();
         shift.setName(shiftDTO.getName());
-        shift.setDate(shiftDTO.getDate());
-        shift.setStartTime(shiftDTO.getStartTime());
-        shift.setEndTime(shiftDTO.getEndTime());
-        shift.setStaff(staff);
-        shift.setStatus(shiftDTO.getStatus());
+        shift.setDate(date);
+        shift.setStartTime(startTime);
+        shift.setEndTime(endTime);
+        shift.setStaffId(shiftDTO.getStaffId());
+        shift.setStatus(Shift.Status.valueOf(shiftDTO.getStatus()));
+        shift.setNote(shiftDTO.getNote());
+        shift.setCreatedAt(LocalDateTime.now());
         shift.setUpdatedAt(LocalDateTime.now());
 
-        Shift updatedShift = shiftRepository.save(shift);
-        logger.info("Shift updated successfully with UUID: {}", updatedShift.getUuid());
-        return convertToDTO(updatedShift);
+        return shiftRepository.save(shift);
+    } catch (DateTimeParseException e) {
+        throw new IllegalArgumentException("Định dạng ngày hoặc giờ không hợp lệ!");
     }
+}
 
-    /**
-     * Xóa ca làm việc
-     */
-    @Transactional
-    public void deleteShift(String uuid) {
-        if (uuid == null) {
-            throw new IllegalArgumentException("Shift UUID cannot be null");
+    public Shift updateShift(Long uuid, ShiftDTO shiftDTO) {
+        // Tìm ca làm việc
+        Shift shift = shiftRepository.findById(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Ca làm việc không tồn tại với uuid: " + uuid));
+
+        // Kiểm tra nhân viên
+        Optional<User> userOptional = userRepository.findById(shiftDTO.getStaffId());
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("Nhân viên không tồn tại!");
+        }
+        User user = userOptional.get();
+        if (!"ACTIVE".equals(user.getStatus())) {
+            throw new IllegalArgumentException("Nhân viên không ở trạng thái hoạt động!");
         }
 
-        logger.info("Deleting shift with UUID: {}", uuid);
-        Shift shift = shiftRepository.findById(uuid)
-                .orElseThrow(() -> new ResourceNotFoundException("Shift not found with UUID: " + uuid));
-        shiftRepository.delete(shift);
-        logger.info("Shift deleted successfully with UUID: {}", uuid);
+        // Kiểm tra trạng thái
+        validateStatus(shiftDTO.getStatus());
+
+        // Cập nhật thông tin
+        shift.setName(shiftDTO.getName());
+        shift.setDate(LocalDate.parse(shiftDTO.getDate(), DateTimeFormatter.ISO_DATE));
+        shift.setStartTime(LocalTime.parse(shiftDTO.getStartTime()));
+        shift.setEndTime(LocalTime.parse(shiftDTO.getEndTime()));
+        shift.setStaffId(shiftDTO.getStaffId());
+        shift.setStatus(Shift.Status.valueOf(shiftDTO.getStatus()));
+        shift.setNote(shiftDTO.getNote());
+        shift.setUpdatedAt(LocalDateTime.now());
+
+        return shiftRepository.save(shift);
     }
 
-    /**
-     * Chuyển đổi Shift entity thành ShiftDTO
-     */
-    private ShiftDTO convertToDTO(Shift shift) {
-        ShiftDTO dto = new ShiftDTO();
+    public void deleteShift(Long uuid) {
+        if (!shiftRepository.existsById(uuid)) {
+            throw new IllegalArgumentException("Ca làm việc không tồn tại với uuid: " + uuid);
+        }
+        shiftRepository.deleteById(uuid);
+    }
+
+    public List<ShiftResponseDTO> getShiftsByMonth(int month, int year) {
+        return shiftRepository.findAll().stream()
+                .filter(shift -> shift.getDate().getMonthValue() == month && shift.getDate().getYear() == year)
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private void validateStatus(String status) {
+        try {
+            Shift.Status.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Giá trị trạng thái không hợp lệ: " + status + ". Các giá trị hợp lệ: " + Arrays.toString(Shift.Status.values()));
+        }
+    }
+
+    private ShiftResponseDTO convertToResponseDTO(Shift shift) {
+        ShiftResponseDTO dto = new ShiftResponseDTO();
         dto.setUuid(shift.getUuid());
         dto.setName(shift.getName());
         dto.setDate(shift.getDate());
         dto.setStartTime(shift.getStartTime());
         dto.setEndTime(shift.getEndTime());
-        dto.setStaffId(shift.getStaff().getUuid());
-        dto.setStaffName(shift.getStaff().getFullName());
-        dto.setStatus(shift.getStatus());
-        dto.setCreatedAt(shift.getCreatedAt());
-        dto.setUpdatedAt(shift.getUpdatedAt());
+        dto.setStaffId(shift.getStaffId());
+        Optional<User> userOptional = userRepository.findById(shift.getStaffId());
+        dto.setStaffName(userOptional.isPresent() ? userOptional.get().getFullName() : "Không xác định");
+        dto.setStatus(shift.getStatus().toString());
+        dto.setNote(shift.getNote() != null ? shift.getNote() : "N/A");
         return dto;
-    }
-
-    /**
-     * Kiểm tra dữ liệu đầu vào của ShiftDTO
-     */
-    private void validateShiftDTO(ShiftDTO shiftDTO) {
-        if (shiftDTO.getName() == null || shiftDTO.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Shift name cannot be empty");
-        }
-        if (shiftDTO.getDate() == null) {
-            throw new IllegalArgumentException("Shift date cannot be null");
-        }
-        if (shiftDTO.getStartTime() == null || shiftDTO.getEndTime() == null) {
-            throw new IllegalArgumentException("Start time and end time cannot be null");
-        }
-        if (shiftDTO.getStaffId() == null || shiftDTO.getStaffId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Staff ID cannot be empty");
-        }
-
-        // Kiểm tra startTime và endTime
-        LocalTime startTime = shiftDTO.getStartTime();
-        LocalTime endTime = shiftDTO.getEndTime();
-        if (endTime.isBefore(startTime)) {
-            throw new IllegalArgumentException("End time must be after start time");
-        }
     }
 }

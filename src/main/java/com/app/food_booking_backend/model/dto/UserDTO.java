@@ -26,6 +26,6 @@ public class UserDTO {
     private LocalDate startDate;
     private String note;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateAt;
     
 }

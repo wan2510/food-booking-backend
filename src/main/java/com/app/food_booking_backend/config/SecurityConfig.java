@@ -30,7 +30,7 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((authorize) ->
@@ -47,7 +47,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                                     "/api/notifications/**",
                                     "/api/shifts/**",
                                     "/api/users/**",
-                                    "/api/attendance/**"
+                                    "/api/attendance/**",
+                                    "/api/feedbacks/**",
+                                    "/api/combos/**",
+                                    "/api/staff/**"
+
                             )
                             .permitAll()
                             .anyRequest().authenticated()

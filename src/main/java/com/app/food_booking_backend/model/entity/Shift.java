@@ -1,26 +1,19 @@
 package com.app.food_booking_backend.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "shift")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Shift {
-
     @Id
-    @Column(length = 36, nullable = false)
-    private String uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long uuid; // Sửa từ String thành Long để khớp với bigint
 
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -32,15 +25,21 @@ public class Shift {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    @ManyToOne
-    @JoinColumn(name = "staff_id", nullable = false)
-    private User staff;
+    @Column(name = "staff_id", length = 36)
+    private String staffId;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-    @Column(name = "created_at", nullable = false)
+    private String note;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public enum Status {
+        ASSIGNED, UNASSIGNED, COMPLETED, CANCELLED
+    }
 }

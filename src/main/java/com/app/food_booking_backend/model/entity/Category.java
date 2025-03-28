@@ -1,52 +1,43 @@
 package com.app.food_booking_backend.model.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Entity(name = "category")
-@Builder
+@Entity
+@Table(name = "category")
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
 public class Category {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "uuid", length = 36, nullable = false, unique = true)
+    @Column(length = 36, nullable = false, unique = true)
     private String uuid;
 
-    @Column(name = "name", length = 255, nullable = false, unique = true)
+    @Column(length = 255, nullable = false)
     private String name;
 
-    @Column(name = "description", length = 255)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "category")
-    @JsonManagedReference
-    private List<Food> foods;
+    public Category() {
+        this.uuid = UUID.randomUUID().toString(); // Tự động sinh UUID
+    }
 }

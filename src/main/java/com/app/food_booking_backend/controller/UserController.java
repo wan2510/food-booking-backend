@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.app.food_booking_backend.model.dto.UserDTO;
+import com.app.food_booking_backend.model.entity.User;
+import com.app.food_booking_backend.repository.UserRepository;
+
 import com.app.food_booking_backend.service.UserService;
 
 import java.util.List;
@@ -17,6 +20,17 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll().stream()
+                .filter(user -> "ACTIVE".equals(user.getStatus()))
+                .toList();
+        return ResponseEntity.ok(users);
+    }
 
     @GetMapping("/staff")
     public ResponseEntity<List<UserDTO>> getAllStaff() {
