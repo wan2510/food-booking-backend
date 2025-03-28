@@ -25,6 +25,7 @@ spring:
     validate-on-migrate: true
     baseline-on-migrate: true
     baseline-version: 0
+    out-of-order: true
 
   web:
     resources:
