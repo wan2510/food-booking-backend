@@ -1,6 +1,7 @@
 package com.app.food_booking_backend.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.app.food_booking_backend.exception.ResourceNotFoundException;
 import com.app.food_booking_backend.model.dto.UserDTO;
+import com.app.food_booking_backend.model.entity.User;
 import com.app.food_booking_backend.model.request.UpdateProfileRequest;
 import com.app.food_booking_backend.service.CloudinaryService;
 import com.app.food_booking_backend.service.UserService;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -56,6 +59,21 @@ public class UserController {
 
         UserDTO updatedUser = userService.updateUserProfile(email, updateProfileRequest);
         return ResponseEntity.ok(updatedUser);
+    }
+    @GetMapping("/getListUser")
+    public List<UserDTO> getUsers() {
+
+        return userService.getUsers();
+    }
+
+    @PostMapping("/addNewUser")
+    public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.createAccount(userDTO));
+    }
+
+    @PutMapping("/updateUser")
+    public ResponseEntity<User> updateUser(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.updateAccount(userDTO));
     }
     
     @PostMapping(value = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
