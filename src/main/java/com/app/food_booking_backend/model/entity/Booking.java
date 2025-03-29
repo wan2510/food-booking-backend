@@ -9,8 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +29,7 @@ public class Booking {
     @Column(length = 36, nullable = false, unique = true)
     private String uuid;
 
-    @Column(length = 36, nullable = false)
+    @Column(name = "user_id", length = 36, nullable = false)
     private String userUuid;
 
     @Column(length = 255, nullable = false)
@@ -60,10 +58,6 @@ public class Booking {
 
     @Column(length = 50, nullable = false)
     private String status;
-
-    @ManyToOne
-    @JoinColumn(name = "table_id")
-    private TableRestaurant table;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

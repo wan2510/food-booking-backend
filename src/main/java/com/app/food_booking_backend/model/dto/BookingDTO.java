@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookingDTO {
     private String uuid;
-    private UserDTO user;
+    private String userUuid;
     private String name;
     private String phone;
     private int guests;

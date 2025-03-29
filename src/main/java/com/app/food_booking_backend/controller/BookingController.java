@@ -3,7 +3,6 @@ package com.app.food_booking_backend.controller;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +26,15 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingDTO> createBooking(@RequestBody BookingDTO bookingRequest) {
-         String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+         // Lấy userUuid từ DTO
+         String userUuid = bookingRequest.getUserUuid();
+         if (userUuid == null || userUuid.trim().isEmpty()) {
+             throw new RuntimeException("User không tồn tại hoặc không được xác thực");
+         }
+
+         // Gọi service để tạo booking
          Booking booking = bookingService.createBooking(
-                userId,
+                userUuid,
                 bookingRequest.getName(),
                 bookingRequest.getPhone(),
                 bookingRequest.getGuests(),
@@ -40,6 +45,7 @@ public class BookingController {
                 bookingRequest.getOccasion()
          );
 
+         // Chuyển entity -> DTO
          BookingDTO response = modelMapper.map(booking, BookingDTO.class);
          return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
